@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>פגישות דיוק ואסטרטגיה · טוהר אקנין</title>
+<link rel="icon" type="image/jpeg" href="logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --white:#FFFFFF;
+    --paper:#F8F5F0;
+    --navy:#1F2A44;
+    --navy-soft:#2E3D5F;
+    --navy-tint:#E8ECF4;
+    --brown:#5C3317;
+    --caramel:#9A5B2C;
+    --sand:#D9C7AE;
+    --espresso:#2A1A10;
+    --black:#141414;
+    --ink-soft:#5A5048;
+    --err:#A0402A;
+    --radius:16px;
+    --shadow:0 10px 28px rgba(31,42,68,.10), 0 2px 8px rgba(31,42,68,.06);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  [hidden]{display:none !important}
+  body{font-family:'Assistant',sans-serif;background:var(--paper);color:var(--black);min-height:100dvh;font-size:16px;font-weight:600}
+  button{font-family:inherit;cursor:pointer}
+  :focus-visible{outline:3px solid var(--caramel);outline-offset:2px}
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:20;
+    background:var(--navy);color:var(--white);
+    box-shadow:0 4px 18px rgba(20,20,20,.18);
+  }
+  .topbar-row{display:flex;align-items:center;gap:14px;padding:10px 18px;max-width:1400px;margin:0 auto}
+  .brand{width:42px;height:42px;border-radius:10px;border:2px solid var(--caramel);object-fit:cover;flex:0 0 42px}
+  .who{display:flex;flex-direction:column;min-width:0}
+  .who strong{font-size:1.15rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .who span{font-size:.9rem;color:#C9D1E3;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .spacer{flex:1}
+  .timer{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:5px 6px 5px 14px}
+  .timer b{font-size:1.15rem;font-weight:800;font-variant-numeric:tabular-nums;min-width:58px;text-align:center}
+  .timer small{font-size:.8rem;color:#C9D1E3;font-weight:600}
+  .icon-btn{background:rgba(255,255,255,.12);color:var(--white);border:none;border-radius:999px;padding:7px 12px;font-weight:700;font-size:.9rem}
+  .icon-btn:hover{background:rgba(255,255,255,.22)}
+  .focus-bar{background:var(--brown);border-top:3px solid var(--caramel)}
+  .focus-bar .inner{max-width:1400px;margin:0 auto;padding:9px 18px;display:flex;gap:10px;align-items:baseline}
+  .focus-bar .label{font-weight:800;color:#F3DDBB;white-space:nowrap;font-size:.95rem}
+  .focus-bar .text{font-weight:700;font-size:1.08rem;color:var(--white)}
+  .focus-bar .text.empty{color:#E6CDB5;font-weight:600;font-style:italic}
+
+  /* ---------- tabs ---------- */
+  .tabs{background:var(--white);border-bottom:2px solid var(--sand)}
+  .tabs .inner{max-width:1400px;margin:0 auto;display:flex;gap:4px;padding:8px 12px;overflow-x:auto;scrollbar-width:thin}
+  .tab{
+    flex:0 0 auto;border:2px solid transparent;background:none;border-radius:12px;
+    padding:8px 14px;font-weight:800;font-size:1.02rem;color:var(--espresso);
+    display:flex;align-items:center;gap:8px;white-space:nowrap;
+  }
+  .tab .n{width:26px;height:26px;border-radius:50%;background:var(--brown);color:var(--white);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem}
+  .tab .t{font-size:.8rem;color:var(--caramel);font-weight:700}
+  .tab:hover{background:var(--paper)}
+  .tab.active{border-color:var(--espresso);color:var(--white);background:linear-gradient(135deg,var(--brown),var(--espresso))}
+  .tab.active .n{background:var(--white);color:var(--brown)}
+  .tab.active .t{color:#F3DDBB}
+  .tab.roadmap-tab .n{background:var(--brown);color:var(--white)}
+
+  /* ---------- layout ---------- */
+  .layout{max-width:1400px;margin:0 auto;padding:22px 18px 60px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:22px;align-items:start}
+  main{min-width:0}
+  .section{display:none}
+  .section.active{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:6px;flex-wrap:wrap}
+  .sec-head h2{font-size:2rem;font-weight:800;color:var(--espresso)}
+  .sec-head .time{background:var(--brown);color:var(--white);border-radius:999px;padding:3px 12px;font-weight:700;font-size:.88rem}
+  .sec-intro{color:var(--ink-soft);font-weight:700;font-size:1.05rem;margin-bottom:18px;line-height:1.6}
+
+  .card{background:var(--white);border:2px solid var(--sand);border-right:7px solid var(--brown);border-radius:var(--radius);padding:20px 18px;margin-bottom:14px}
+  .card.private{border-color:#C9D1E3;border-right-color:var(--navy);background:#F5F7FB}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+  .field:last-child{margin-bottom:0}
+  .field label,.q-label{font-weight:800;color:var(--espresso);font-size:1.12rem;line-height:1.45}
+  .hint{font-weight:700;color:var(--ink-soft);font-size:.9rem}
+  input[type=text],input[type=url],input[type=date],textarea,select{
+    font-family:'Assistant',sans-serif;font-size:17px;font-weight:600;
+    width:100%;padding:11px 13px;border:2px solid var(--sand);border-radius:12px;
+    background:var(--white);color:var(--black);line-height:1.55;
+  }
+  textarea{min-height:76px;resize:none;overflow:hidden}
+  textarea.tall{min-height:150px}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--brown);box-shadow:0 0 0 3px rgba(92,51,23,.12)}
+  input[type=url]{direction:ltr;text-align:left}
+  .private-tag{display:inline-flex;align-items:center;gap:6px;background:var(--navy);color:var(--white);border-radius:999px;padding:2px 10px;font-size:.78rem;font-weight:700;margin-inline-start:8px;vertical-align:middle}
+
+  .guide-q{border-right:5px solid var(--caramel);padding-right:14px}
+  .decision{
+    background:var(--navy);color:var(--white);border-radius:var(--radius);padding:18px;margin-top:6px;
+    box-shadow:var(--shadow);
+  }
+  .decision label{color:#F3DDBB !important;font-size:1.12rem !important}
+  .decision textarea,.decision input{border-color:var(--navy-soft);font-weight:700;font-size:17px}
+  .decision textarea:focus{border-color:#D9A066}
+
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .chip{
+    border:2px solid var(--brown);background:var(--white);color:var(--brown);
+    border-radius:999px;padding:8px 16px;font-weight:800;font-size:1rem;
+  }
+  .chip.on{background:linear-gradient(135deg,var(--brown),var(--espresso));border-color:var(--espresso);color:var(--white)}
+  .chip.on::before{content:"✓ "}
+  .chip.add{border-style:dashed;border-color:var(--caramel);color:var(--brown)}
+  .topic-card .topic-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .topic-card h3{font-size:1.4rem;font-weight:800;color:var(--brown)}
+  .link-btn{background:none;border:none;color:var(--ink-soft);font-weight:700;font-size:.88rem;text-decoration:underline;text-underline-offset:3px}
+  .link-btn:hover{color:var(--err)}
+  .field.decided label{color:var(--navy)}
+  .field.decided textarea{border-color:var(--navy);background:var(--navy-tint)}
+  .badge{display:inline-block;border-radius:6px;padding:1px 8px;font-size:.75rem;font-weight:800;margin-inline-start:6px;vertical-align:middle}
+  .badge.idea{background:#F3E6D8;color:var(--brown)}
+  .badge.dec{background:var(--navy);color:var(--white)}
+  .badge.chk{background:#EEE;color:var(--ink-soft)}
+  .empty-note{color:var(--ink-soft);font-weight:600;padding:8px 2px}
+
+  .action-card h3{font-size:1.2rem;font-weight:800;color:var(--white);background:var(--brown);display:inline-block;border-radius:10px;padding:4px 14px;margin-bottom:14px}
+  .seg{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 12px}
+  .seg button{border:2px solid var(--navy);background:var(--white);color:var(--navy);border-radius:999px;padding:7px 18px;font-weight:800}
+  .seg button.on{background:var(--navy);color:var(--white)}
+
+  .nav-row{display:flex;justify-content:space-between;margin-top:18px;gap:10px}
+  .btn{
+    border:none;border-radius:999px;padding:12px 24px;font-weight:800;font-size:1rem;
+    background:var(--navy);color:var(--white);box-shadow:var(--shadow);
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  .btn:hover{background:var(--navy-soft)}
+  .btn.brown{background:linear-gradient(135deg,var(--brown),#2A1A10)}
+  .btn.ghost{background:var(--white);color:var(--navy);border:2px solid var(--navy);box-shadow:none}
+  .btn.big{font-size:1.15rem;padding:16px 30px}
+
+  /* ---------- side panel ---------- */
+  aside{position:sticky;top:150px;display:flex;flex-direction:column;gap:14px}
+  .side-box{background:var(--white);border:2px solid var(--sand);border-right:7px solid var(--brown);border-radius:var(--radius);padding:14px}
+  .side-box h3{font-size:1.15rem;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+  .side-box.follow h3{color:var(--brown)}
+  .side-box.priv{background:#F5F7FB;border-color:#C9D1E3;border-right-color:var(--navy)}
+  .side-box.priv h3{color:var(--navy)}
+  .side-box textarea{min-height:150px;max-height:38vh;overflow-y:auto;resize:vertical}
+  .side-box .hint{display:block;margin-top:6px}
+  .side-toggle{display:none}
+
+  /* ---------- clients screen ---------- */
+  #clientsScreen{max-width:980px;margin:0 auto;padding:30px 18px 60px}
+  .hero{display:flex;align-items:center;gap:18px;margin-bottom:24px;flex-wrap:wrap}
+  .hero img{width:84px;height:84px;border-radius:18px;border:3px solid var(--caramel);object-fit:cover}
+  .hero h1{font-size:2.3rem;font-weight:800;color:var(--espresso);line-height:1.2}
+  .hero p{color:var(--ink-soft);font-weight:600}
+  .client-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:18px}
+  .client-card{
+    text-align:right;background:var(--white);border:2px solid var(--sand);border-right:7px solid var(--brown);
+    border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:4px;
+    transition:transform .12s, box-shadow .12s;
+  }
+  .client-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+  .client-card strong{font-size:1.2rem;font-weight:800}
+  .client-card span{color:var(--ink-soft);font-weight:600;font-size:.92rem}
+  .client-card .f{color:var(--brown);font-weight:700;font-size:.92rem;margin-top:6px}
+  .tools-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px;padding-top:18px;border-top:2px solid var(--sand);align-items:center}
+  .tools-row .hint{flex-basis:100%}
+
+  /* ---------- roadmap ---------- */
+  .rm-actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+  .doc{
+    background:var(--white);border-radius:6px;box-shadow:var(--shadow);
+    max-width:820px;margin:0 auto;padding:0 0 40px;overflow:hidden;
+  }
+  .doc:focus{outline:3px dashed var(--caramel);outline-offset:4px}
+  .doc .d-head{background:linear-gradient(135deg,var(--navy),#141B2E);color:var(--white);padding:30px 40px;border-bottom:6px solid var(--brown);display:flex;align-items:center;gap:20px}
+  .doc .d-head img{width:82px;height:82px;border-radius:14px;border:2px solid var(--caramel)}
+  .doc .d-head h1{font-size:2.1rem;font-weight:800;line-height:1.1}
+  .doc .d-head p{color:#D9C7AE;font-weight:700;margin-top:6px}
+  .doc .d-sec{padding:0 40px;margin-top:28px}
+  .doc h2{font-size:1.35rem;font-weight:800;color:var(--navy);border-bottom:3px solid var(--sand);padding-bottom:6px;margin-bottom:12px}
+  .doc h4{font-size:1.02rem;font-weight:800;color:var(--brown);margin:12px 0 4px}
+  .doc p,.doc li{line-height:1.7;font-weight:500}
+  .doc .goal{background:var(--navy-tint);border-right:6px solid var(--navy);border-radius:10px;padding:14px 16px;font-size:1.15rem;font-weight:800;color:var(--navy)}
+  .doc .gap{background:#F6EEE5;border-right:6px solid var(--brown);border-radius:10px;padding:14px 16px;font-size:1.1rem;font-weight:800;color:var(--brown);margin-top:12px}
+  .doc .topic{margin-bottom:16px}
+  .doc .tag{display:inline-block;border-radius:6px;padding:1px 9px;font-size:.78rem;font-weight:800;margin-inline-end:6px;vertical-align:middle}
+  .doc .tag.dec{background:var(--navy);color:var(--white)}
+  .doc .tag.idea{background:#F3E6D8;color:var(--brown)}
+  .doc .act{border:2px solid var(--sand);border-radius:12px;padding:12px 16px;margin-bottom:10px;display:grid;grid-template-columns:42px 1fr;gap:4px 12px}
+  .doc .act .num{grid-row:span 4;width:36px;height:36px;border-radius:50%;background:var(--brown);color:var(--white);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem}
+  .doc .act .what{font-weight:800;font-size:1.08rem}
+  .doc .act .meta{font-weight:600;color:var(--ink-soft);font-size:.95rem}
+  .doc .act .meta b{color:var(--black)}
+  .doc ul{padding-right:22px}
+  .doc .foot{text-align:center;color:#8A7563;font-weight:700;margin-top:34px;font-size:.9rem}
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--white);padding:10px 20px;border-radius:999px;font-weight:700;z-index:50;box-shadow:var(--shadow)}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:980px){
+    .layout{grid-template-columns:1fr}
+    aside{position:fixed;inset:auto 0 0 0;top:auto;z-index:30;background:var(--paper);padding:14px;border-top:3px solid var(--navy);box-shadow:0 -10px 30px rgba(0,0,0,.18);max-height:70vh;overflow-y:auto;transform:translateY(105%);transition:transform .25s}
+    aside.open{transform:none}
+    .side-toggle{display:flex;position:fixed;bottom:16px;left:16px;z-index:31}
+    .grid2{grid-template-columns:1fr}
+    .timer small{display:none}
+  }
+  @media (max-width:560px){
+    .topbar-row{flex-wrap:wrap}
+    .who span{display:none}
+    .sec-head h2{font-size:1.45rem}
+    .doc .d-head,.doc .d-sec{padding-left:20px;padding-right:20px}
+  }
+
+  /* ---------- print: only the roadmap ---------- */
+  @media print{
+    @page{size:A4;margin:12mm}
+    body{background:#fff}
+    .topbar,.tabs,aside,.side-toggle,.rm-actions,.sec-head,.sec-intro,#clientsScreen,.toast{display:none !important}
+    .layout{display:block;padding:0}
+    .section{display:none !important}
+    #sec-7{display:block !important}
+    .doc{box-shadow:none;max-width:none;border-radius:0}
+    .doc .d-head,.doc .goal,.doc .gap,.doc .tag,.doc .act .num{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .doc .act,.doc .topic{break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= CLIENT FILES ================= -->
+<div id="clientsScreen">
+  <div class="hero">
+    <img src="logo.jpg" alt="טוהר אקנין">
+    <div>
+      <h1>פגישות דיוק ואסטרטגיה</h1>
+      <p>תיק לכל לקוחה: הכנה, הובלת הפגישה, ומפת דרך בסוף.</p>
+    </div>
+  </div>
+  <button class="btn brown big" id="newClientBtn">＋ תיק לקוחה חדש</button>
+  <div class="client-grid" id="clientGrid"></div>
+  <div class="tools-row">
+    <button class="btn ghost" id="exportBtn">⬇ גיבוי כל התיקים לקובץ</button>
+    <button class="btn ghost" id="importBtn">⬆ שחזור מגיבוי</button>
+    <input type="file" id="importFile" accept=".json,application/json" hidden>
+    <span class="hint">התיקים נשמרים אוטומטית בדפדפן הזה, במחשב הזה בלבד. כדאי לגבות לקובץ מדי פעם.</span>
+  </div>
+</div>
+
+<!-- ================= ONE CLIENT ================= -->
+<div id="clientScreen" hidden>
+  <header class="topbar">
+    <div class="topbar-row">
+      <img class="brand" src="logo.jpg" alt="">
+      <div class="who"><strong id="whoName">לקוחה חדשה</strong><span id="whoBiz"></span></div>
+      <div class="spacer"></div>
+      <div class="timer" title="שעון הפגישה (שעה וחצי)">
+        <small>זמן פגישה</small>
+        <b id="timerText">00:00</b>
+        <button class="icon-btn" id="timerBtn">▶ התחלה</button>
+        <button class="icon-btn" id="timerReset" title="איפוס">↺</button>
+      </div>
+      <button class="icon-btn" id="backBtn">כל התיקים</button>
+    </div>
+    <div class="focus-bar">
+      <div class="inner"><span class="label">🎯 המיקוד שבחרנו:</span><span class="text empty" id="focusText">עוד לא נבחר. בוחרות אותו בחלק 2.</span></div>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="חלקי הפגישה">
+    <div class="inner" id="tabs">
+      <button class="tab" data-sec="1"><span class="n">1</span>הכנה</button>
+      <button class="tab" data-sec="2"><span class="n">2</span>מיקוד <span class="t">10′</span></button>
+      <button class="tab" data-sec="3"><span class="n">3</span>תמונת מצב <span class="t">20′</span></button>
+      <button class="tab" data-sec="4"><span class="n">4</span>הפער המרכזי <span class="t">15′</span></button>
+      <button class="tab" data-sec="5"><span class="n">5</span>פיתוח ואסטרטגיה <span class="t">30′</span></button>
+      <button class="tab" data-sec="6"><span class="n">6</span>פעולות וסגירה <span class="t">15′</span></button>
+      <button class="tab roadmap-tab" data-sec="7"><span class="n">★</span>מפת הדרך</button>
+    </div>
+  </nav>
+
+  <div class="layout">
+    <main>
+      <!-- 1. PREP -->
+      <section class="section" id="sec-1">
+        <div class="sec-head"><h2>הכנה לפגישה</h2></div>
+        <p class="sec-intro">לפני השיחה: הפרטים שלה, השאלון המקדים, ומה חשוב לך לברר.</p>
+        <div class="card">
+          <div class="grid2">
+            <div class="field"><label for="f-name">שם הלקוחה</label><input type="text" id="f-name" data-path="prep.name"></div>
+            <div class="field"><label for="f-biz">שם העסק</label><input type="text" id="f-biz" data-path="prep.business"></div>
+            <div class="field"><label for="f-date">תאריך הפגישה</label><input type="date" id="f-date" data-path="prep.date"></div>
+            <div class="field"><label for="f-link">קישור לעמוד העסקי</label><input type="url" id="f-link" data-path="prep.link" placeholder="https://"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="field"><label for="f-q">השאלון המקדים והתשובות שלה</label><span class="hint">אפשר להדביק כאן את מה שהגיע בוואטסאפ</span><textarea class="tall" id="f-q" data-path="prep.questionnaire"></textarea></div>
+        </div>
+        <div class="card private">
+          <div class="field"><label for="f-clarify">מה חשוב לי לברר בעקבות התשובות שלה?<span class="private-tag">🔒 פרטי</span></label><textarea id="f-clarify" data-path="prep.toClarify"></textarea></div>
+        </div>
+        <div class="nav-row"><button type="button" class="link-btn" id="deleteClientBtn">מחיקת התיק</button><button class="btn" data-goto="2">למיקוד הפגישה ←</button></div>
+      </section>
+
+      <!-- 2. FOCUS -->
+      <section class="section" id="sec-2">
+        <div class="sec-head"><h2>מיקוד הפגישה</h2><span class="time">כ־10 דקות</span></div>
+        <p class="sec-intro">שאלות הכוונה בשבילך. כותבות חופשי, ובסוף בוחרות מיקוד אחד.</p>
+        <div class="card">
+          <div class="field guide-q"><label for="f-why">מה גרם לה לקבוע את הפגישה עכשיו?</label><textarea id="f-why" data-path="focus.why"></textarea></div>
+          <div class="field guide-q"><label for="f-imp">מה הכי חשוב לה לקדם או לפתור?</label><textarea id="f-imp" data-path="focus.important"></textarea></div>
+          <div class="field guide-q"><label for="f-out">עם מה היא רוצה לצאת היום?</label><textarea id="f-out" data-path="focus.outcome"></textarea></div>
+        </div>
+        <div class="decision">
+          <div class="field"><label for="f-chosen">🎯 המיקוד שבחרנו לפגישה הזאת</label><textarea id="f-chosen" data-path="focus.chosen" placeholder="משפט אחד ברור..."></textarea></div>
+        </div>
+      </section>
+
+      <!-- 3. SITUATION -->
+      <section class="section" id="sec-3">
+        <div class="sec-head"><h2>תמונת מצב</h2><span class="time">כ־20 דקות</span></div>
+        <p class="sec-intro">שאלות עזר לבחירה. פותחות רק את מה שרלוונטי למיקוד.</p>
+        <div class="chips" id="sitChips"></div>
+        <div id="sitFields"></div>
+      </section>
+
+      <!-- 4. GAP -->
+      <section class="section" id="sec-4">
+        <div class="sec-head"><h2>זיהוי הפער המרכזי</h2><span class="time">כ־15 דקות</span></div>
+        <p class="sec-intro">מה היא מתארת, מה מזהות יחד, ומה עוד פתוח.</p>
+        <div class="card">
+          <div class="field"><label for="f-desc">הקושי כפי שהלקוחה מתארת אותו</label><textarea id="f-desc" data-path="gap.described"></textarea></div>
+          <div class="field"><label for="f-ident">מה אנחנו מזהות יחד מתוך השיחה</label><textarea id="f-ident" data-path="gap.identified"></textarea></div>
+          <div class="field"><label for="f-tbc">מה עדיין צריך לברר</label><textarea id="f-tbc" data-path="gap.toClarify"></textarea></div>
+        </div>
+        <div class="decision">
+          <div class="field"><label for="f-central">הפער המרכזי שנבחר לעבוד עליו הוא…</label><textarea id="f-central" data-path="gap.central"></textarea></div>
+        </div>
+      </section>
+
+      <!-- 5. STRATEGY -->
+      <section class="section" id="sec-5">
+        <div class="sec-head"><h2>פיתוח ואסטרטגיה</h2><span class="time">כ־30 דקות</span></div>
+        <p class="sec-intro">פותחות רק את הנושאים שרלוונטיים. בכל נושא מפרידות בין רעיון שעלה לבין כיוון שבחרנו.</p>
+        <div class="chips" id="topicChips"></div>
+        <div id="topicCards"></div>
+      </section>
+
+      <!-- 6. ACTIONS -->
+      <section class="section" id="sec-6">
+        <div class="sec-head"><h2>תוכנית פעולה וסגירה</h2><span class="time">כ־15 דקות</span></div>
+        <p class="sec-intro">עד שלוש פעולות בעדיפות ראשונה.</p>
+        <div id="actionCards"></div>
+        <button class="chip add" id="addActionBtn">＋ הוספת פעולה</button>
+        <div class="decision" style="margin-top:18px">
+          <div class="field">
+            <label>האם זה נותן מענה למטרה שהגדרנו בתחילת הפגישה?</label>
+            <div class="seg" id="answersSeg">
+              <button type="button" data-v="כן">כן</button>
+              <button type="button" data-v="חלקית">חלקית</button>
+              <button type="button" data-v="לא">לא</button>
+            </div>
+            <textarea data-path="closing.note" placeholder="הערה קצרה (לא חובה)"></textarea>
+          </div>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <div class="field"><label for="f-open">מה נשאר פתוח</label><textarea id="f-open" data-path="closing.open"></textarea></div>
+        </div>
+        <div class="nav-row"><span></span><button class="btn brown big" data-goto="7">★ למפת הדרך</button></div>
+      </section>
+
+      <!-- 7. ROADMAP -->
+      <section class="section" id="sec-7">
+        <div class="sec-head"><h2>מפת הדרך</h2></div>
+        <p class="sec-intro">טיוטה שנבנית רק ממה שתיעדת, בלי הערות פרטיות. אפשר לערוך ישירות על הדף.</p>
+        <div class="rm-actions">
+          <button class="btn brown big" id="genBtn">✨ יצירת מפת הדרך</button>
+          <button class="btn" id="printBtn" hidden>🖨 הדפסה / שמירה כ-PDF</button>
+          <button class="btn ghost" id="copyRmBtn" hidden>העתקת הטקסט</button>
+        </div>
+        <div class="doc" id="roadmap" contenteditable="true" spellcheck="false" hidden></div>
+        <p class="empty-note" id="rmEmpty">עוד לא נוצרה מפת דרך ללקוחה הזאת.</p>
+      </section>
+    </main>
+
+    <aside id="aside">
+      <div class="side-box follow">
+        <h3>📌 נושאים להמשך</h3>
+        <textarea id="sideFollow" data-path="followups" placeholder="נושא שעלה ולא עכשיו..."></textarea>
+        <span class="hint">נכנס למפת הדרך כ"נושאים להמשך".</span>
+      </div>
+      <div class="side-box priv">
+        <h3>🔒 הערות פרטיות שלי</h3>
+        <textarea id="sidePrivate" data-path="private"></textarea>
+        <span class="hint">לעולם לא נכנס לסיכום ללקוחה.</span>
+      </div>
+      <span class="hint">קיצורים: Alt+1…7 מעבר בין חלקים · Alt+N נושאים להמשך · Alt+P הערות פרטיות</span>
+    </aside>
+    <button class="btn side-toggle" id="sideToggle">📌 נושאים והערות</button>
+  </div>
+</div>
+
+<script>
+const STORE_KEY = "tohar-strategy-meetings-v1";
+
+const SITUATION = [
+  ["offer",     "מה היא מציעה היום ולמי?",               "מה את מציעה היום ולמי"],
+  ["develop",   "מה היא רוצה לפתח או לקדם?",             "מה את רוצה לפתח ולקדם"],
+  ["clients",   "איך מגיעים אליה לקוחות כרגע?",          "איך מגיעות אלייך לקוחות כרגע"],
+  ["works",     "מה עובד ומה פחות?",                     "מה עובד ומה פחות"],
+  ["resources", "אילו משאבים ומגבלות צריך לקחת בחשבון?", "משאבים ומגבלות"]
+];
+const TOPICS = ["שירותים ומוצרים", "קהל", "בידול וערך", "מסרים", "ערוצי שיווק", "תהליך מכירה"];
+const MAX_ACTIONS = 3;
+
+const $ = id => document.getElementById(id);
+let db = load();
+let current = null;     // the open client
+let saveTimer = null;
+
+/* ---------- storage ---------- */
+function load(){
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || { clients: [] }; }
+  catch { return { clients: [] }; }
+}
+function persist(){
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(db)); }
+  catch { toast("שמירה נכשלה. כדאי לגבות לקובץ עכשיו."); }
+}
+function saveSoon(){
+  if (current) current.updatedAt = Date.now();
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(persist, 300);
+}
+window.addEventListener("beforeunload", persist);
+
+function newClient(){
+  return {
+    id: "c" + Date.now(),
+    createdAt: Date.now(), updatedAt: Date.now(),
+    prep: { name: "", business: "", date: new Date().toISOString().slice(0, 10), link: "", questionnaire: "", toClarify: "" },
+    focus: { why: "", important: "", outcome: "", chosen: "" },
+    situation: { open: [], answers: {} },
+    gap: { described: "", identified: "", toClarify: "", central: "" },
+    strategy: { topics: [] },
+    actions: [{ what: "", done: "", due: "", depends: "" }],
+    closing: { answers: "", note: "", open: "" },
+    followups: "", private: "",
+    roadmap: { html: "", generatedAt: 0 }
+  };
+}
+
+/* ---------- path helpers for data-path binding ---------- */
+function getPath(obj, path){ return path.split(".").reduce((o, k) => (o == null ? o : o[k]), obj); }
+function setPath(obj, path, value){
+  const keys = path.split("."), last = keys.pop();
+  const target = keys.reduce((o, k) => (o[k] ??= {}), obj);
+  target[last] = value;
+}
+
+function autoGrow(el){
+  if (el.tagName !== "TEXTAREA" || el.closest(".side-box")) return;
+  el.style.height = "auto";
+  el.style.height = el.scrollHeight + 4 + "px";
+}
+
+function fillBound(root){
+  root.querySelectorAll("[data-path]").forEach(el => {
+    el.value = getPath(current, el.dataset.path) ?? "";
+    autoGrow(el);
+  });
+}
+
+document.addEventListener("input", e => {
+  const el = e.target;
+  if (!current) return;
+  if (el.dataset && el.dataset.path){
+    setPath(current, el.dataset.path, el.value);
+    autoGrow(el);
+    if (el.dataset.path === "focus.chosen") renderFocus();
+    if (el.dataset.path.startsWith("prep.name") || el.dataset.path.startsWith("prep.business")) renderWho();
+    saveSoon();
+  } else if (el.id === "roadmap"){
+    current.roadmap.html = el.innerHTML;
+    saveSoon();
+  }
+});
+
+/* ---------- clients screen ---------- */
+function fmtDate(iso){
+  if (!iso) return "";
+  const [y, m, d] = iso.split("-");
+  return d && m && y ? Number(d) + "." + Number(m) + "." + y : iso;
+}
+
+function renderClients(){
+  const grid = $("clientGrid");
+  grid.innerHTML = "";
+  const list = [...db.clients].sort((a, b) => (b.prep.date || "").localeCompare(a.prep.date || "") || b.updatedAt - a.updatedAt);
+  if (!list.length){
+    grid.innerHTML = '<p class="empty-note">עוד אין תיקים. לוחצים על "תיק לקוחה חדש" ומתחילים.</p>';
+    return;
+  }
+  list.forEach(c => {
+    const b = document.createElement("button");
+    b.className = "client-card";
+    b.innerHTML = "<strong></strong><span></span><span class='f'></span>";
+    b.children[0].textContent = c.prep.name || "ללא שם";
+    b.children[1].textContent = [c.prep.business, fmtDate(c.prep.date)].filter(Boolean).join(" · ");
+    b.children[2].textContent = c.focus.chosen ? "🎯 " + c.focus.chosen : "";
+    b.addEventListener("click", () => openClient(c.id));
+    grid.appendChild(b);
+  });
+}
+
+function showClients(){
+  persist();
+  current = null;
+  $("clientScreen").hidden = true;
+  $("clientsScreen").hidden = false;
+  renderClients();
+  window.scrollTo(0, 0);
+}
+
+function openClient(id, sec){
+  current = db.clients.find(c => c.id === id);
+  if (!current) return;
+  $("clientsScreen").hidden = true;
+  $("clientScreen").hidden = false;
+  renderAll();
+  goto(sec || (current.focus.chosen ? 2 : 1));
+}
+
+$("newClientBtn").addEventListener("click", () => {
+  const c = newClient();
+  db.clients.push(c);
+  persist();
+  openClient(c.id, 1);
+  setTimeout(() => $("f-name").focus(), 50);
+});
+$("backBtn").addEventListener("click", showClients);
+$("deleteClientBtn").addEventListener("click", () => {
+  if (!confirm('למחוק את התיק של "' + (current.prep.name || "ללא שם") + '"? אי אפשר לשחזר אותו, אלא מקובץ גיבוי.')) return;
+  db.clients = db.clients.filter(c => c.id !== current.id);
+  persist();
+  showClients();
+});
+
+/* ---------- client rendering ---------- */
+function renderWho(){
+  $("whoName").textContent = current.prep.name || "לקוחה חדשה";
+  $("whoBiz").textContent = [current.prep.business, fmtDate(current.prep.date)].filter(Boolean).join(" · ");
+}
+function renderFocus(){
+  const t = $("focusText"), v = current.focus.chosen.trim();
+  t.textContent = v || "עוד לא נבחר. בוחרות אותו בחלק 2.";
+  t.classList.toggle("empty", !v);
+}
+
+function renderSituation(){
+  const chips = $("sitChips"), box = $("sitFields");
+  chips.innerHTML = ""; box.innerHTML = "";
+  SITUATION.forEach(([key, q]) => {
+    const on = current.situation.open.includes(key);
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "chip" + (on ? " on" : "");
+    chip.textContent = q;
+    chip.addEventListener("click", () => {
+      const open = current.situation.open;
+      if (on){
+        if ((current.situation.answers[key] || "").trim() && !confirm("לסגור את השאלה? מה שכתבת בה יישמר, אבל לא ייכנס למפת הדרך.")) return;
+        current.situation.open = open.filter(k => k !== key);
+      } else {
+        open.push(key);
+      }
+      saveSoon(); renderSituation();
+      if (!on) setTimeout(() => box.querySelector('[data-path="situation.answers.' + key + '"]')?.focus(), 30);
+    });
+    chips.appendChild(chip);
+  });
+  const open = SITUATION.filter(([k]) => current.situation.open.includes(k));
+  if (!open.length){
+    box.innerHTML = '<p class="empty-note">בחרי למעלה את השאלות שרלוונטיות למיקוד.</p>';
+    return;
+  }
+  const card = document.createElement("div");
+  card.className = "card";
+  open.forEach(([key, q]) => {
+    const f = document.createElement("div");
+    f.className = "field guide-q";
+    f.innerHTML = '<label></label><textarea></textarea>';
+    f.querySelector("label").textContent = q;
+    f.querySelector("textarea").dataset.path = "situation.answers." + key;
+    card.appendChild(f);
+  });
+  box.appendChild(card);
+  fillBound(box);
+}
+
+function renderTopics(){
+  const chips = $("topicChips"), box = $("topicCards");
+  chips.innerHTML = ""; box.innerHTML = "";
+  const topics = current.strategy.topics;
+  const addTopic = label => {
+    topics.push({ label, ideas: "", direction: "", check: "" });
+    saveSoon(); renderTopics();
+    setTimeout(() => box.lastElementChild?.querySelector("textarea")?.focus(), 30);
+  };
+  TOPICS.forEach(label => {
+    const on = topics.some(t => t.label === label);
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "chip" + (on ? " on" : "");
+    chip.textContent = label;
+    chip.addEventListener("click", () => {
+      if (on){
+        const el = [...box.children].find(c => c.dataset.label === label);
+        el?.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else addTopic(label);
+    });
+    chips.appendChild(chip);
+  });
+  const other = document.createElement("button");
+  other.type = "button"; other.className = "chip add"; other.textContent = "＋ נושא אחר";
+  other.addEventListener("click", () => {
+    const label = (prompt("שם הנושא:") || "").trim();
+    if (label) addTopic(label);
+  });
+  chips.appendChild(other);
+
+  if (!topics.length){
+    box.innerHTML = '<p class="empty-note">בחרי נושא כדי לפתוח אותו.</p>';
+    return;
+  }
+  topics.forEach((t, i) => {
+    const card = document.createElement("div");
+    card.className = "card topic-card";
+    card.dataset.label = t.label;
+    card.innerHTML =
+      '<div class="topic-title"><h3></h3><button type="button" class="link-btn">הסרת הנושא</button></div>' +
+      '<div class="field"><label>רעיונות ואפשרויות שעלו <span class="badge idea">רעיון</span></label><textarea data-path="strategy.topics.' + i + '.ideas"></textarea></div>' +
+      '<div class="field decided"><label>הכיוון שבחרנו והסיבה לבחירה <span class="badge dec">החלטה</span></label><textarea data-path="strategy.topics.' + i + '.direction"></textarea></div>' +
+      '<div class="field"><label>מה דורש בדיקה בהמשך <span class="badge chk">לבדיקה</span></label><textarea data-path="strategy.topics.' + i + '.check"></textarea></div>';
+    card.querySelector("h3").textContent = t.label;
+    card.querySelector(".link-btn").addEventListener("click", () => {
+      const filled = t.ideas.trim() || t.direction.trim() || t.check.trim();
+      if (filled && !confirm('להסיר את הנושא "' + t.label + '" וכל מה שנכתב בו?')) return;
+      topics.splice(i, 1);
+      saveSoon(); renderTopics();
+    });
+    box.appendChild(card);
+  });
+  fillBound(box);
+}
+
+function renderActions(){
+  const box = $("actionCards");
+  box.innerHTML = "";
+  current.actions.forEach((a, i) => {
+    const card = document.createElement("div");
+    card.className = "card action-card";
+    card.innerHTML =
+      '<div class="topic-title"><h3>פעולה ' + (i + 1) + '</h3>' + (current.actions.length > 1 ? '<button type="button" class="link-btn">הסרה</button>' : '') + '</div>' +
+      '<div class="field"><label>מה בדיוק עושים?</label><textarea data-path="actions.' + i + '.what"></textarea></div>' +
+      '<div class="field"><label>מה ייחשב להשלמת הפעולה?</label><textarea data-path="actions.' + i + '.done"></textarea></div>' +
+      '<div class="grid2">' +
+        '<div class="field"><label>עד מתי?</label><input type="date" data-path="actions.' + i + '.due"></div>' +
+        '<div class="field"><label>במה היא תלויה, אם בכלל?</label><input type="text" data-path="actions.' + i + '.depends"></div>' +
+      '</div>';
+    card.querySelector(".link-btn")?.addEventListener("click", () => {
+      const filled = Object.values(a).some(v => String(v).trim());
+      if (filled && !confirm("להסיר את פעולה " + (i + 1) + "?")) return;
+      current.actions.splice(i, 1);
+      saveSoon(); renderActions();
+    });
+    box.appendChild(card);
+  });
+  fillBound(box);
+  $("addActionBtn").hidden = current.actions.length >= MAX_ACTIONS;
+}
+
+$("addActionBtn").addEventListener("click", () => {
+  if (current.actions.length >= MAX_ACTIONS) return;
+  current.actions.push({ what: "", done: "", due: "", depends: "" });
+  saveSoon(); renderActions();
+  setTimeout(() => $("actionCards").lastElementChild.querySelector("textarea").focus(), 30);
+});
+
+function renderAnswersSeg(){
+  document.querySelectorAll("#answersSeg button").forEach(b => b.classList.toggle("on", b.dataset.v === current.closing.answers));
+}
+document.querySelectorAll("#answersSeg button").forEach(b => b.addEventListener("click", () => {
+  current.closing.answers = current.closing.answers === b.dataset.v ? "" : b.dataset.v;
+  saveSoon(); renderAnswersSeg();
+}));
+
+function renderRoadmap(){
+  const has = !!current.roadmap.html;
+  $("roadmap").innerHTML = current.roadmap.html;
+  $("roadmap").hidden = !has;
+  $("rmEmpty").hidden = has;
+  $("printBtn").hidden = !has;
+  $("copyRmBtn").hidden = !has;
+  $("genBtn").textContent = has ? "↻ יצירה מחדש מהתיעוד" : "✨ יצירת מפת הדרך";
+}
+
+function renderAll(){
+  fillBound($("clientScreen"));
+  renderWho(); renderFocus(); renderSituation(); renderTopics(); renderActions(); renderAnswersSeg(); renderRoadmap();
+}
+
+/* ---------- navigation ---------- */
+function goto(n){
+  n = String(n);
+  document.querySelectorAll(".section").forEach(s => s.classList.toggle("active", s.id === "sec-" + n));
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.sec === n));
+  document.querySelector('.tab[data-sec="' + n + '"]')?.scrollIntoView({ inline: "center", block: "nearest" });
+  // textareas in hidden sections have no height yet
+  document.querySelectorAll("#sec-" + n + " textarea").forEach(autoGrow);
+  window.scrollTo({ top: 0 });
+}
+document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => goto(t.dataset.sec)));
+document.addEventListener("click", e => { const g = e.target.closest("[data-goto]"); if (g) goto(g.dataset.goto); });
+
+document.addEventListener("keydown", e => {
+  if (!current || !e.altKey) return;
+  if (/^[1-7]$/.test(e.key)){ e.preventDefault(); goto(e.key); }
+  const k = e.key.toLowerCase();
+  if (k === "n" || k === "מ"){ e.preventDefault(); openSide(); $("sideFollow").focus(); }
+  if (k === "p" || k === "פ"){ e.preventDefault(); openSide(); $("sidePrivate").focus(); }
+});
+
+function openSide(){ $("aside").classList.add("open"); }
+$("sideToggle").addEventListener("click", () => $("aside").classList.toggle("open"));
+
+/* ---------- meeting timer ---------- */
+let timerStart = 0, timerElapsed = 0, timerTick = null;
+function showTime(){
+  const ms = timerElapsed + (timerStart ? Date.now() - timerStart : 0);
+  const m = Math.floor(ms / 60000), s = Math.floor(ms / 1000) % 60;
+  $("timerText").textContent = String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+  $("timerText").style.color = m >= 90 ? "#F3A27A" : "";
+}
+$("timerBtn").addEventListener("click", () => {
+  if (timerStart){
+    timerElapsed += Date.now() - timerStart; timerStart = 0;
+    clearInterval(timerTick); $("timerBtn").textContent = "▶ המשך";
+  } else {
+    timerStart = Date.now(); timerTick = setInterval(showTime, 1000);
+    $("timerBtn").textContent = "❚❚ עצירה";
+  }
+  showTime();
+});
+$("timerReset").addEventListener("click", () => {
+  if ((timerStart || timerElapsed) && !confirm("לאפס את שעון הפגישה?")) return;
+  timerStart = 0; timerElapsed = 0; clearInterval(timerTick);
+  $("timerBtn").textContent = "▶ התחלה"; showTime();
+});
+
+/* ---------- roadmap: built only from what was documented ---------- */
+function esc(s){ return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+function para(s){ return esc(s.trim()).replace(/\n/g, "<br>"); }
+function has(s){ return !!(s && String(s).trim()); }
+
+function buildRoadmap(c){
+  const out = [];
+  const sec = (title, body) => { if (body) out.push('<div class="d-sec"><h2>' + title + '</h2>' + body + '</div>'); };
+  const sub = (title, text) => has(text) ? '<h4>' + title + '</h4><p>' + para(text) + '</p>' : "";
+
+  // goal
+  let goal = "";
+  if (has(c.focus.chosen)) goal += '<div class="goal">' + para(c.focus.chosen) + '</div>';
+  goal += sub("עם מה רצית לצאת מהפגישה", c.focus.outcome);
+  sec("מטרת הפגישה", goal);
+
+  // relevant situation: only the questions that were opened and answered
+  let sit = "";
+  SITUATION.forEach(([key, , title]) => {
+    if (c.situation.open.includes(key)) sit += sub(title, c.situation.answers[key]);
+  });
+  sec("תמונת המצב", sit);
+
+  // insights
+  let ins = sub("הקושי כפי שתיארת אותו", c.gap.described) + sub("מה זיהינו יחד", c.gap.identified);
+  if (has(c.gap.central)) ins += '<div class="gap">הפער המרכזי שבחרנו לעבוד עליו: ' + para(c.gap.central) + '</div>';
+  sec("התובנות המרכזיות", ins);
+
+  // direction & decisions: decisions and raw ideas are labeled apart
+  let dir = "";
+  c.strategy.topics.forEach(t => {
+    if (!has(t.direction) && !has(t.ideas)) return;
+    dir += '<div class="topic"><h4>' + esc(t.label) + '</h4>';
+    if (has(t.direction)) dir += '<p><span class="tag dec">החלטנו</span> ' + para(t.direction) + '</p>';
+    if (has(t.ideas)) dir += '<p><span class="tag idea">רעיונות שעלו, עוד לא הוחלטו</span> ' + para(t.ideas) + '</p>';
+    dir += '</div>';
+  });
+  sec("הכיוון וההחלטות שקיבלנו", dir);
+
+  // actions
+  let acts = "";
+  c.actions.filter(a => has(a.what)).forEach((a, i) => {
+    acts += '<div class="act"><span class="num">' + (i + 1) + '</span><div class="what">' + para(a.what) + '</div>' +
+      (has(a.done) ? '<div class="meta"><b>מתי זה נחשב הושלם:</b> ' + para(a.done) + '</div>' : "") +
+      (has(a.due) ? '<div class="meta"><b>עד:</b> ' + esc(fmtDate(a.due)) + '</div>' : "") +
+      (has(a.depends) ? '<div class="meta"><b>תלוי ב:</b> ' + para(a.depends) + '</div>' : "") +
+      '</div>';
+  });
+  sec("הפעולות הבאות", acts);
+
+  // what stays open (private notes and the prep "what I want to clarify" are never included)
+  let cont = "";
+  const items = [];
+  if (has(c.followups)) items.push(para(c.followups));
+  if (has(c.closing.open)) items.push(para(c.closing.open));
+  if (has(c.gap.toClarify)) items.push(para(c.gap.toClarify));
+  c.strategy.topics.forEach(t => { if (has(t.check)) items.push("<b>" + esc(t.label) + ":</b> " + para(t.check)); });
+  if (items.length) cont = "<ul>" + items.map(x => "<li>" + x + "</li>").join("") + "</ul>";
+  sec("נושאים שנשארו להמשך", cont);
+
+  const meta = [c.prep.name, c.prep.business, fmtDate(c.prep.date)].filter(has).map(esc).join(" · ");
+  const head = '<div class="d-head"><img src="logo.jpg" alt=""><div><h1>מפת הדרך שלך</h1><p>' + meta + '</p></div></div>';
+  const body = out.length ? out.join("") : '<div class="d-sec"><p>עוד אין מספיק תיעוד כדי לבנות מפת דרך.</p></div>';
+  return head + body + '<div class="foot">טוהר אקנין · תהליכי שיווק</div>';
+}
+
+$("genBtn").addEventListener("click", () => {
+  if (current.roadmap.html && !confirm("ליצור מחדש מהתיעוד? שינויים שעשית ידנית בטיוטה יימחקו.")) return;
+  current.roadmap.html = buildRoadmap(current);
+  current.roadmap.generatedAt = Date.now();
+  saveSoon(); renderRoadmap();
+  toast("הטיוטה מוכנה. אפשר לערוך ישירות על הדף ✍️");
+});
+$("printBtn").addEventListener("click", () => {
+  const old = document.title;
+  document.title = "מפת דרך - " + (current.prep.name || "לקוחה");
+  window.print();
+  document.title = old;
+});
+$("copyRmBtn").addEventListener("click", async () => {
+  try { await navigator.clipboard.writeText($("roadmap").innerText); toast("הטקסט הועתק"); }
+  catch { toast("ההעתקה לא הצליחה"); }
+});
+
+/* ---------- backup ---------- */
+$("exportBtn").addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify(db, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "גיבוי תיקי פגישות " + new Date().toISOString().slice(0, 10) + ".json";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+});
+$("importBtn").addEventListener("click", () => $("importFile").click());
+$("importFile").addEventListener("change", async e => {
+  const file = e.target.files[0];
+  e.target.value = "";
+  if (!file) return;
+  try {
+    const data = JSON.parse(await file.text());
+    if (!Array.isArray(data.clients)) throw new Error("bad file");
+    let added = 0, replaced = 0;
+    data.clients.forEach(c => {
+      const i = db.clients.findIndex(x => x.id === c.id);
+      if (i === -1){ db.clients.push(c); added++; }
+      else if ((c.updatedAt || 0) > (db.clients[i].updatedAt || 0)){ db.clients[i] = c; replaced++; }
+    });
+    persist(); renderClients();
+    toast("שוחזרו " + added + " תיקים חדשים" + (replaced ? " ועודכנו " + replaced : ""));
+  } catch {
+    toast("הקובץ לא נראה כמו גיבוי של המערכת");
+  }
+});
+
+/* ---------- misc ---------- */
+let toastTimer = null;
+function toast(msg){
+  let t = document.querySelector(".toast");
+  if (!t){ t = document.createElement("div"); t.className = "toast"; document.body.appendChild(t); }
+  t.textContent = msg; t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => (t.hidden = true), 2600);
+}
+
+renderClients();
+</script>
+</body>
+</html>
