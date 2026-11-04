@@ -209,6 +209,19 @@
   .doc .act .meta b{color:var(--black)}
   .doc ul{padding-right:22px}
   .doc .foot{text-align:center;color:#8A7563;font-weight:700;margin-top:34px;font-size:.9rem}
+  .drop{
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    border:3px dashed var(--caramel);border-radius:var(--radius);padding:16px;background:#FBF7F0;
+  }
+  .drop.over{background:#F3E6D8;border-color:var(--brown)}
+  .file-row{margin-top:12px;border:2px solid var(--sand);border-radius:12px;overflow:hidden;background:var(--white)}
+  .file-head{display:flex;align-items:center;gap:10px;padding:10px 14px;flex-wrap:wrap}
+  .file-head .name{font-weight:800;flex:1;min-width:140px;word-break:break-all}
+  .file-head .size{color:var(--ink-soft);font-weight:700;font-size:.88rem}
+  .file-head .btn{padding:8px 16px;font-size:.92rem;box-shadow:none}
+  .file-view{border-top:2px solid var(--sand);background:#EEE}
+  .file-view iframe{width:100%;height:75vh;border:0;display:block}
+  .file-view img{max-width:100%;display:block;margin:0 auto}
   .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--white);padding:10px 20px;border-radius:999px;font-weight:700;z-index:50;box-shadow:var(--shadow)}
 
   /* ---------- responsive ---------- */
@@ -309,7 +322,14 @@
           </div>
         </div>
         <div class="card">
-          <div class="field"><label for="f-q">השאלון המקדים והתשובות שלה</label><span class="hint">אפשר להדביק כאן את מה שהגיע בוואטסאפ</span><textarea class="tall" id="f-q" data-path="prep.questionnaire"></textarea></div>
+          <div class="field"><label>השאלון המקדים והתשובות שלה</label><span class="hint">מעלים את ה-PDF שהגיע בוואטסאפ, או מדביקים את הטקסט למטה</span></div>
+          <div class="drop" id="dropZone">
+            <button type="button" class="btn brown" id="attachBtn">📎 העלאת PDF של השאלון</button>
+            <span class="hint">או גוררים את הקובץ לכאן</span>
+            <input type="file" id="attachFile" accept="application/pdf,image/*" multiple hidden>
+          </div>
+          <div id="attachList"></div>
+          <div class="field" style="margin-top:14px"><label for="f-q">טקסט מהשאלון <span class="hint">(לא חובה)</span></label><textarea class="tall" id="f-q" data-path="prep.questionnaire"></textarea></div>
         </div>
         <div class="card private">
           <div class="field"><label for="f-clarify">מה חשוב לי לברר בעקבות התשובות שלה?<span class="private-tag">🔒 פרטי</span></label><textarea id="f-clarify" data-path="prep.toClarify"></textarea></div>
@@ -554,12 +574,94 @@ $("newClientBtn").addEventListener("click", () => {
   setTimeout(() => $("f-name").focus(), 50);
 });
 $("backBtn").addEventListener("click", showClients);
-$("deleteClientBtn").addEventListener("click", () => {
+$("deleteClientBtn").addEventListener("click", async () => {
   if (!confirm('למחוק את התיק של "' + (current.prep.name || "ללא שם") + '"? אי אפשר לשחזר אותו, אלא מקובץ גיבוי.')) return;
+  await Promise.all((current.prep.files || []).map(f => fileStore("delete", f.id).catch(() => {})));
   db.clients = db.clients.filter(c => c.id !== current.id);
   persist();
   showClients();
 });
+
+/* ---------- attached files (questionnaire PDF): kept in IndexedDB, too big for localStorage ---------- */
+function fileStore(op, key, value){
+  return new Promise((ok, bad) => {
+    const req = indexedDB.open("tohar-strategy-files", 1);
+    req.onupgradeneeded = () => req.result.createObjectStore("files");
+    req.onerror = () => bad(req.error);
+    req.onsuccess = () => {
+      const tx = req.result.transaction("files", op === "get" ? "readonly" : "readwrite");
+      const st = tx.objectStore("files");
+      const r = op === "get" ? st.get(key) : op === "put" ? st.put(value, key) : st.delete(key);
+      r.onsuccess = () => ok(r.result);
+      r.onerror = () => bad(r.error);
+    };
+  });
+}
+
+function fmtSize(n){ return n > 1048576 ? (n / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(n / 1024)) + " KB"; }
+
+async function addFiles(list){
+  const files = [...list].filter(f => f.type === "application/pdf" || f.type.startsWith("image/"));
+  if (!files.length){ toast("אפשר להעלות PDF או תמונה"); return; }
+  current.prep.files ??= [];
+  for (const f of files){
+    const id = "f" + Date.now() + Math.random().toString(36).slice(2, 7);
+    try {
+      await fileStore("put", id, f);
+      current.prep.files.push({ id, name: f.name, type: f.type, size: f.size, addedAt: Date.now() });
+    } catch {
+      toast("לא הצלחתי לשמור את " + f.name);
+    }
+  }
+  saveSoon(); persist(); renderFiles();
+  toast(files.length > 1 ? "הקבצים נשמרו בתיק" : "הקובץ נשמר בתיק");
+}
+
+function renderFiles(){
+  const box = $("attachList");
+  box.innerHTML = "";
+  (current.prep.files || []).forEach((meta, i) => {
+    const row = document.createElement("div");
+    row.className = "file-row";
+    row.innerHTML =
+      '<div class="file-head"><span>' + (meta.type === "application/pdf" ? "📄" : "🖼") + '</span><span class="name"></span><span class="size">' + fmtSize(meta.size) + '</span>' +
+      '<button type="button" class="btn" data-act="view">הצגה כאן</button>' +
+      '<button type="button" class="btn ghost" data-act="open">פתיחה בחלון</button>' +
+      '<button type="button" class="link-btn" data-act="del">הסרה</button></div>' +
+      '<div class="file-view" hidden></div>';
+    row.querySelector(".name").textContent = meta.name;
+    const view = row.querySelector(".file-view");
+    row.querySelector('[data-act="view"]').addEventListener("click", async e => {
+      if (!view.hidden){ view.hidden = true; view.innerHTML = ""; e.target.textContent = "הצגה כאן"; return; }
+      const blob = await fileStore("get", meta.id);
+      if (!blob){ toast("הקובץ לא נמצא בדפדפן הזה"); return; }
+      const url = URL.createObjectURL(blob);
+      view.innerHTML = meta.type === "application/pdf" ? '<iframe title="השאלון"></iframe>' : '<img alt="">';
+      view.firstChild.src = url;
+      view.hidden = false;
+      e.target.textContent = "הסתרה";
+    });
+    row.querySelector('[data-act="open"]').addEventListener("click", async () => {
+      const blob = await fileStore("get", meta.id);
+      if (!blob){ toast("הקובץ לא נמצא בדפדפן הזה"); return; }
+      window.open(URL.createObjectURL(blob), "_blank");
+    });
+    row.querySelector('[data-act="del"]').addEventListener("click", async () => {
+      if (!confirm('להסיר את "' + meta.name + '" מהתיק?')) return;
+      await fileStore("delete", meta.id).catch(() => {});
+      current.prep.files.splice(i, 1);
+      saveSoon(); renderFiles();
+    });
+    box.appendChild(row);
+  });
+}
+
+$("attachBtn").addEventListener("click", () => $("attachFile").click());
+$("attachFile").addEventListener("change", e => { addFiles(e.target.files); e.target.value = ""; });
+const dz = $("dropZone");
+["dragenter", "dragover"].forEach(t => dz.addEventListener(t, e => { e.preventDefault(); dz.classList.add("over"); }));
+["dragleave", "drop"].forEach(t => dz.addEventListener(t, e => { e.preventDefault(); dz.classList.remove("over"); }));
+dz.addEventListener("drop", e => addFiles(e.dataTransfer.files));
 
 /* ---------- client rendering ---------- */
 function renderWho(){
@@ -722,7 +824,7 @@ function renderRoadmap(){
 
 function renderAll(){
   fillBound($("clientScreen"));
-  renderWho(); renderFocus(); renderSituation(); renderTopics(); renderActions(); renderAnswersSeg(); renderRoadmap();
+  renderWho(); renderFocus(); renderFiles(); renderSituation(); renderTopics(); renderActions(); renderAnswersSeg(); renderRoadmap();
 }
 
 /* ---------- navigation ---------- */
@@ -858,8 +960,16 @@ $("copyRmBtn").addEventListener("click", async () => {
 });
 
 /* ---------- backup ---------- */
-$("exportBtn").addEventListener("click", () => {
-  const blob = new Blob([JSON.stringify(db, null, 2)], { type: "application/json" });
+const blobToDataUrl = b => new Promise(ok => { const r = new FileReader(); r.onload = () => ok(r.result); r.readAsDataURL(b); });
+
+$("exportBtn").addEventListener("click", async () => {
+  // attached PDFs travel inside the backup so a restore on another computer is complete
+  const files = {};
+  for (const c of db.clients) for (const f of (c.prep.files || [])){
+    const b = await fileStore("get", f.id).catch(() => null);
+    if (b) files[f.id] = await blobToDataUrl(b);
+  }
+  const blob = new Blob([JSON.stringify({ ...db, files }, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = "גיבוי תיקי פגישות " + new Date().toISOString().slice(0, 10) + ".json";
@@ -880,6 +990,9 @@ $("importFile").addEventListener("change", async e => {
       if (i === -1){ db.clients.push(c); added++; }
       else if ((c.updatedAt || 0) > (db.clients[i].updatedAt || 0)){ db.clients[i] = c; replaced++; }
     });
+    for (const [id, url] of Object.entries(data.files || {})){
+      await fileStore("put", id, await (await fetch(url)).blob()).catch(() => {});
+    }
     persist(); renderClients();
     toast("שוחזרו " + added + " תיקים חדשים" + (replaced ? " ועודכנו " + replaced : ""));
   } catch {
