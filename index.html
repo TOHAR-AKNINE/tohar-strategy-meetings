@@ -227,6 +227,30 @@
   .file-view{border-top:2px solid var(--sand);background:#EEE}
   .file-view iframe{width:100%;height:75vh;border:0;display:block}
   .file-view img{max-width:100%;display:block;margin:0 auto}
+  .follow-tab .n{background:var(--caramel) !important;color:var(--white) !important}
+  .timeline{display:flex;align-items:flex-start;overflow-x:auto;padding:6px 2px 16px;margin-bottom:6px}
+  .tl-dot{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;min-width:92px;flex:0 0 auto}
+  .tl-dot .c{width:46px;height:46px;border-radius:50%;border:3px solid var(--brown);background:var(--white);color:var(--brown);font-weight:800;font-size:1.15rem;display:flex;align-items:center;justify-content:center}
+  .tl-dot.done .c{background:var(--brown);color:var(--white)}
+  .tl-dot.active .c{background:var(--espresso);border-color:var(--espresso);color:var(--white);box-shadow:0 0 0 5px #F3DDBB}
+  .tl-dot .l{font-weight:800;font-size:.95rem;color:var(--espresso)}
+  .tl-dot .d{font-weight:700;font-size:.8rem;color:var(--ink-soft)}
+  .tl-dot.add .c{border-style:dashed;border-color:var(--caramel);color:var(--caramel);font-size:1.5rem}
+  .tl-line{width:36px;height:4px;border-radius:4px;background:var(--brown);margin-top:21px;flex:0 0 auto}
+  .meeting-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+  .meeting-head h3{font-size:1.7rem;font-weight:800;color:var(--espresso)}
+  .meeting-head input{width:auto}
+  .meeting-head .link-btn{margin-inline-start:auto}
+  .goal-progress{display:flex;align-items:center;gap:12px;margin:4px 0 10px;font-weight:800;color:var(--brown)}
+  .goal-progress .bar{flex:1;height:14px;background:var(--sand);border-radius:99px;overflow:hidden}
+  .goal-progress .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--caramel),var(--brown));transition:width .3s}
+  .goal-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 0;border-bottom:2px solid var(--paper)}
+  .goal-row input{flex:1;min-width:200px}
+  .state{display:flex;gap:4px}
+  .state button{border:2px solid var(--sand);background:var(--white);border-radius:999px;padding:5px 11px;font-weight:800;font-size:.86rem;color:var(--ink-soft)}
+  .state button.on[data-s="todo"]{background:var(--ink-soft);border-color:var(--ink-soft);color:var(--white)}
+  .state button.on[data-s="doing"]{background:var(--caramel);border-color:var(--caramel);color:var(--white)}
+  .state button.on[data-s="done"]{background:#3B6D11;border-color:#3B6D11;color:var(--white)}
   .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--white);padding:10px 20px;border-radius:999px;font-weight:700;z-index:50;box-shadow:var(--shadow)}
 
   /* ---------- responsive ---------- */
@@ -311,6 +335,7 @@
       <button class="tab" data-sec="5"><span class="n">5</span>פיתוח ואסטרטגיה <span class="t">30′</span></button>
       <button class="tab" data-sec="6"><span class="n">6</span>פעולות וסגירה <span class="t">15′</span></button>
       <button class="tab roadmap-tab" data-sec="7"><span class="n">★</span>מפת הדרך</button>
+      <button class="tab follow-tab" data-sec="8"><span class="n">↻</span>ליווי</button>
     </div>
   </nav>
   </header>
@@ -428,6 +453,14 @@
         <div class="doc" id="roadmap" contenteditable="true" spellcheck="false" hidden></div>
         <p class="empty-note" id="rmEmpty">עוד לא נוצרה מפת דרך ללקוחה הזאת.</p>
       </section>
+
+      <!-- 8. FOLLOW-UP -->
+      <section class="section" id="sec-8">
+        <div class="sec-head"><h2>ליווי ומעקב</h2></div>
+        <p class="sec-intro">פגישה 1 היא פגישת האסטרטגיה. כל פגישת המשך מקבלת מספר משלה. לוחצים על פגישה בציר כדי לראות אותה.</p>
+        <div class="timeline" id="timeline"></div>
+        <div id="meetingBox"></div>
+      </section>
     </main>
 
     <aside id="aside">
@@ -441,7 +474,7 @@
         <textarea id="sidePrivate" data-path="private"></textarea>
         <span class="hint">לעולם לא נכנס לסיכום ללקוחה.</span>
       </div>
-      <span class="hint">קיצורים: Alt+1…7 מעבר בין חלקים · Alt+N נושאים להמשך · Alt+P הערות פרטיות</span>
+      <span class="hint">קיצורים: Alt+1…8 מעבר בין חלקים · Alt+N נושאים להמשך · Alt+P הערות פרטיות</span>
     </aside>
     <button class="btn side-toggle" id="sideToggle">📌 נושאים והערות</button>
   </div>
@@ -493,6 +526,7 @@ function newClient(){
     actions: [{ what: "", done: "", due: "", depends: "" }],
     closing: { answers: "", note: "", open: "" },
     followups: "", private: "",
+    sessions: [],
     roadmap: { html: "", generatedAt: 0 }
   };
 }
@@ -553,7 +587,7 @@ function renderClients(){
     b.className = "client-card";
     b.innerHTML = "<strong></strong><span></span><span class='f'></span>";
     b.children[0].textContent = c.prep.name || "ללא שם";
-    b.children[1].textContent = [c.prep.business, fmtDate(c.prep.date)].filter(Boolean).join(" · ");
+    b.children[1].textContent = [c.prep.business, fmtDate(c.prep.date), c.sessions?.length ? "פגישה " + (c.sessions.length + 1) : ""].filter(Boolean).join(" · ");
     b.children[2].textContent = c.focus.chosen ? "🎯 " + c.focus.chosen : "";
     b.addEventListener("click", () => openClient(c.id));
     grid.appendChild(b);
@@ -588,7 +622,8 @@ $("newClientBtn").addEventListener("click", () => {
 $("backBtn").addEventListener("click", showClients);
 $("deleteClientBtn").addEventListener("click", async () => {
   if (!confirm('למחוק את התיק של "' + (current.prep.name || "ללא שם") + '"? אי אפשר לשחזר אותו, אלא מקובץ גיבוי.')) return;
-  await Promise.all((current.prep.files || []).map(f => fileStore("delete", f.id).catch(() => {})));
+  const allFiles = [...(current.prep.files || []), ...(current.sessions || []).flatMap(m => m.files || [])];
+  await Promise.all(allFiles.map(f => fileStore("delete", f.id).catch(() => {})));
   db.clients = db.clients.filter(c => c.id !== current.id);
   persist();
   showClients();
@@ -612,27 +647,28 @@ function fileStore(op, key, value){
 
 function fmtSize(n){ return n > 1048576 ? (n / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(n / 1024)) + " KB"; }
 
-async function addFiles(list){
+// target: the array that lists the files (prep.files or a follow-up meeting's files)
+async function addFiles(list, target = (current.prep.files ??= []), rerender = renderFiles){
   const files = [...list].filter(f => f.type === "application/pdf" || f.type.startsWith("image/"));
   if (!files.length){ toast("אפשר להעלות PDF או תמונה"); return; }
-  current.prep.files ??= [];
   for (const f of files){
     const id = "f" + Date.now() + Math.random().toString(36).slice(2, 7);
     try {
       await fileStore("put", id, f);
-      current.prep.files.push({ id, name: f.name, type: f.type, size: f.size, addedAt: Date.now() });
+      target.push({ id, name: f.name, type: f.type, size: f.size, addedAt: Date.now() });
     } catch {
       toast("לא הצלחתי לשמור את " + f.name);
     }
   }
-  saveSoon(); persist(); renderFiles();
+  saveSoon(); persist(); rerender();
   toast(files.length > 1 ? "הקבצים נשמרו בתיק" : "הקובץ נשמר בתיק");
 }
 
-function renderFiles(){
-  const box = $("attachList");
+function renderFiles(){ renderFileList($("attachList"), current.prep.files ??= [], renderFiles); }
+
+function renderFileList(box, list, rerender){
   box.innerHTML = "";
-  (current.prep.files || []).forEach((meta, i) => {
+  list.forEach((meta, i) => {
     const row = document.createElement("div");
     row.className = "file-row";
     row.innerHTML =
@@ -648,7 +684,7 @@ function renderFiles(){
       const blob = await fileStore("get", meta.id);
       if (!blob){ toast("הקובץ לא נמצא בדפדפן הזה"); return; }
       const url = URL.createObjectURL(blob);
-      view.innerHTML = meta.type === "application/pdf" ? '<iframe title="השאלון"></iframe>' : '<img alt="">';
+      view.innerHTML = meta.type === "application/pdf" ? '<iframe title="הקובץ"></iframe>' : '<img alt="">';
       view.firstChild.src = url;
       view.hidden = false;
       e.target.textContent = "הסתרה";
@@ -661,8 +697,8 @@ function renderFiles(){
     row.querySelector('[data-act="del"]').addEventListener("click", async () => {
       if (!confirm('להסיר את "' + meta.name + '" מהתיק?')) return;
       await fileStore("delete", meta.id).catch(() => {});
-      current.prep.files.splice(i, 1);
-      saveSoon(); renderFiles();
+      list.splice(i, 1);
+      saveSoon(); rerender();
     });
     box.appendChild(row);
   });
@@ -834,9 +870,130 @@ function renderRoadmap(){
   $("genBtn").textContent = has ? "↻ יצירה מחדש מהתיעוד" : "✨ יצירת מפת הדרך";
 }
 
+
+/* ---------- follow-up meetings (meeting 1 = the strategy meeting) ---------- */
+const GOAL_STATES = [["todo", "לא התחיל"], ["doing", "בתהליך"], ["done", "הושג"]];
+let selMeeting = -1;   // index in current.sessions, -1 = the latest
+
+function newMeeting(){
+  const list = current.sessions;
+  const prev = list[list.length - 1];
+  // goals carry over: from the previous meeting, or from the roadmap actions for meeting 2
+  const goals = prev
+    ? prev.goals.map(g => ({ text: g.text, state: g.state }))
+    : current.actions.filter(a => (a.what || "").trim()).map(a => ({ text: a.what.trim(), state: "todo" }));
+  if (!goals.length) goals.push({ text: "", state: "todo" });
+  list.push({ id: "m" + Date.now(), date: new Date().toISOString().slice(0, 10), files: [], update: "", status: "", goals, progress: "", stuck: "", next: "", private: "" });
+  selMeeting = list.length - 1;
+  saveSoon(); persist(); renderMeetings();
+}
+
+function renderMeetings(){
+  current.sessions ??= [];
+  const list = current.sessions;
+  if (selMeeting < 0 || selMeeting >= list.length) selMeeting = list.length - 1;
+
+  const tl = $("timeline");
+  tl.innerHTML = "";
+  const dot = (cls, num, label, date, onClick) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "tl-dot " + cls;
+    b.innerHTML = '<span class="c"></span><span class="l"></span><span class="d"></span>';
+    b.children[0].textContent = num; b.children[1].textContent = label; b.children[2].textContent = date;
+    b.addEventListener("click", onClick);
+    tl.appendChild(b);
+  };
+  const line = () => { const l = document.createElement("span"); l.className = "tl-line"; tl.appendChild(l); };
+  dot("done", "1", "אסטרטגיה", fmtDate(current.prep.date), () => goto(7));
+  list.forEach((m, i) => {
+    line();
+    dot(i === selMeeting ? "active" : "done", String(i + 2), "פגישה " + (i + 2), fmtDate(m.date), () => { selMeeting = i; renderMeetings(); });
+  });
+  line();
+  dot("add", "+", "פגישה חדשה", "", newMeeting);
+
+  const box = $("meetingBox");
+  box.innerHTML = "";
+  if (!list.length){
+    box.innerHTML = '<p class="empty-note">עוד אין פגישות המשך. לוחצים על "+" כדי לפתוח את פגישה 2. היעדים יעברו אליה לבד ממפת הדרך.</p>';
+    return;
+  }
+  const i = selMeeting, m = list[i], p = "sessions." + i + ".";
+  box.innerHTML =
+    '<div class="meeting-head"><h3>פגישה ' + (i + 2) + '</h3><input type="date" data-path="' + p + 'date"><button type="button" class="link-btn" id="delMeeting">מחיקת הפגישה</button></div>' +
+    '<div class="card"><div class="field"><label>📎 סיכום הפגישה (PDF)</label></div>' +
+      '<div class="drop" id="mDrop"><button type="button" class="btn brown" id="mAttach">העלאת PDF של הסיכום</button><span class="hint">או גוררים את הקובץ לכאן</span><input type="file" id="mFile" accept="application/pdf,image/*" multiple hidden></div>' +
+      '<div id="mFiles"></div></div>' +
+    '<div class="card"><div class="field"><label>היעדים</label><span class="hint">עוברים לבד מהפגישה הקודמת. מסמנים איפה כל יעד עומד.</span></div>' +
+      '<div class="goal-progress"><span id="gpText"></span><span class="bar"><i id="gpBar"></i></span></div>' +
+      '<div id="goalList"></div><button type="button" class="chip add" id="addGoal" style="margin-top:10px">＋ הוספת יעד</button></div>' +
+    '<div class="card">' +
+      '<div class="field guide-q"><label>עדכון לטוהר</label><span class="hint">מה היא סיפרה או שלחה לפני הפגישה</span><textarea data-path="' + p + 'update"></textarea></div>' +
+      '<div class="field guide-q"><label>תמונת מצב עכשיו</label><textarea data-path="' + p + 'status"></textarea></div>' +
+      '<div class="field guide-q"><label>מה התקדם, הצלחות</label><textarea data-path="' + p + 'progress"></textarea></div>' +
+      '<div class="field guide-q"><label>איפה נתקעה</label><textarea data-path="' + p + 'stuck"></textarea></div>' +
+    '</div>' +
+    '<div class="decision"><div class="field"><label>הצעדים עד הפגישה הבאה</label><textarea data-path="' + p + 'next"></textarea></div></div>' +
+    '<div class="card private" style="margin-top:14px"><div class="field"><label>הערות פרטיות שלי<span class="private-tag">🔒 פרטי</span></label><textarea data-path="' + p + 'private"></textarea></div></div>';
+
+  const gl = $("goalList");
+  m.goals.forEach((g, j) => {
+    const row = document.createElement("div");
+    row.className = "goal-row";
+    row.innerHTML = '<input type="text" placeholder="יעד..." data-path="' + p + 'goals.' + j + '.text"><span class="state"></span><button type="button" class="link-btn">הסרה</button>';
+    GOAL_STATES.forEach(([key, label]) => {
+      const sb = document.createElement("button");
+      sb.type = "button"; sb.dataset.s = key; sb.textContent = label;
+      sb.className = g.state === key ? "on" : "";
+      sb.addEventListener("click", () => { g.state = key; saveSoon(); renderMeetings(); });
+      row.querySelector(".state").appendChild(sb);
+    });
+    row.querySelector(".link-btn").addEventListener("click", () => {
+      if (g.text.trim() && !confirm('להסיר את היעד "' + g.text + '"?')) return;
+      m.goals.splice(j, 1); saveSoon(); renderMeetings();
+    });
+    gl.appendChild(row);
+  });
+  $("addGoal").addEventListener("click", () => {
+    m.goals.push({ text: "", state: "todo" }); saveSoon(); renderMeetings();
+    setTimeout(() => gl.lastElementChild?.querySelector("input")?.focus(), 30);
+  });
+  $("delMeeting").addEventListener("click", async () => {
+    if (!confirm("למחוק את פגישה " + (i + 2) + " וכל מה שתועד בה?")) return;
+    await Promise.all((m.files || []).map(f => fileStore("delete", f.id).catch(() => {})));
+    list.splice(i, 1); selMeeting = -1; saveSoon(); persist(); renderMeetings();
+  });
+
+  const rerenderFiles = () => renderFileList($("mFiles"), m.files, rerenderFiles);
+  rerenderFiles();
+  $("mAttach").addEventListener("click", () => $("mFile").click());
+  $("mFile").addEventListener("change", e => { addFiles(e.target.files, m.files, rerenderFiles); e.target.value = ""; });
+  const md = $("mDrop");
+  ["dragenter", "dragover"].forEach(t => md.addEventListener(t, e => { e.preventDefault(); md.classList.add("over"); }));
+  ["dragleave", "drop"].forEach(t => md.addEventListener(t, e => { e.preventDefault(); md.classList.remove("over"); }));
+  md.addEventListener("drop", e => addFiles(e.dataTransfer.files, m.files, rerenderFiles));
+
+  fillBound(box);
+  updateGoalProgress();
+}
+
+function updateGoalProgress(){
+  const m = current?.sessions?.[selMeeting];
+  if (!m || !$("gpText")) return;
+  const total = m.goals.filter(g => g.text.trim()).length;
+  const done = m.goals.filter(g => g.state === "done" && g.text.trim()).length;
+  $("gpText").textContent = done + " מתוך " + total + " יעדים הושגו";
+  $("gpBar").style.width = (total ? Math.round(done / total * 100) : 0) + "%";
+}
+
+// goal progress updates live while typing a goal's text
+document.addEventListener("input", e => {
+  if (current && e.target.dataset?.path?.includes(".goals.")) updateGoalProgress();
+});
+
 function renderAll(){
   fillBound($("clientScreen"));
-  renderWho(); renderFocus(); renderFiles(); renderSituation(); renderTopics(); renderActions(); renderAnswersSeg(); renderRoadmap();
+  renderWho(); renderFocus(); renderFiles(); renderMeetings(); renderSituation(); renderTopics(); renderActions(); renderAnswersSeg(); renderRoadmap();
 }
 
 /* ---------- navigation ---------- */
@@ -853,7 +1010,7 @@ document.addEventListener("click", e => { const g = e.target.closest("[data-goto
 
 document.addEventListener("keydown", e => {
   if (!current || !e.altKey) return;
-  if (/^[1-7]$/.test(e.key)){ e.preventDefault(); goto(e.key); }
+  if (/^[1-8]$/.test(e.key)){ e.preventDefault(); goto(e.key); }
   const k = e.key.toLowerCase();
   if (k === "n" || k === "מ"){ e.preventDefault(); openSide(); $("sideFollow").focus(); }
   if (k === "p" || k === "פ"){ e.preventDefault(); openSide(); $("sidePrivate").focus(); }
@@ -976,7 +1133,7 @@ const blobToDataUrl = b => new Promise(ok => { const r = new FileReader(); r.onl
 $("exportBtn").addEventListener("click", async () => {
   // attached PDFs travel inside the backup so a restore on another computer is complete
   const files = {};
-  for (const c of db.clients) for (const f of (c.prep.files || [])){
+  for (const c of db.clients) for (const f of [...(c.prep.files || []), ...(c.sessions || []).flatMap(m => m.files || [])]){
     const b = await fileStore("get", f.id).catch(() => null);
     if (b) files[f.id] = await blobToDataUrl(b);
   }
