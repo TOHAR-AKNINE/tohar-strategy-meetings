@@ -927,7 +927,7 @@ function lastAgreedHtml(i){
     const dirs = prev.directions.filter(d => has(d.title));
     if (dirs.length) h += "<p><b>הכיוונים שבחרנו:</b></p><ul>" + li(dirs.map(d => d.title)) + "</ul>";
     if (has(prev.toCheck)) h += '<p class="hint">ומה רצית לבדוק בפעם שעברה: ' + para(prev.toCheck) + "</p>";
-    return h ? '<p class="hint">מפגישה ' + prev.n + " (" + esc(fmtDate(prev.date)) + ")</p>" + h : "";
+    return h ? '<p class="hint">מפגישה ' + prev.n + (prev.date ? " (" + esc(fmtDate(prev.date)) + ")" : "") + "</p>" + h : "";
   }
   let h = "";
   if (has(current.focus.chosen)) h += '<p><b>המיקוד מפגישת האסטרטגיה:</b> ' + para(current.focus.chosen) + "</p>";

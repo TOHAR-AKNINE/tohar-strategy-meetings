@@ -1,6 +1,6 @@
 // Keeps the meeting system working without internet.
 // Bump VERSION whenever index.html changes so phones pick up the new copy.
-const VERSION = "v6";
+const VERSION = "v7";
 const CACHE = "strategy-meetings-" + VERSION;
 const FILES = [
   "./",
