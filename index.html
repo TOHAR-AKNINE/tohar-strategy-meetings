@@ -214,6 +214,43 @@
   .doc .act .meta b{color:var(--black)}
   .doc ul{padding-right:22px}
   .doc .foot{text-align:center;color:#8A7563;font-weight:700;margin-top:34px;font-size:.9rem}
+
+  /* section 5: the chain audience -> transformation -> service -> journey */
+  .chain{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:4px 0 16px}
+  .chain button{font:inherit;font-weight:800;font-size:1rem;border:2px solid var(--sand);background:var(--white);color:var(--brown);border-radius:999px;padding:7px 16px;cursor:pointer}
+  .chain button.done{background:var(--brown);border-color:var(--brown);color:var(--white)}
+  .chain .ar{color:var(--caramel);font-weight:800}
+  .blk-card .blk-title{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  .blk-card .bn{width:38px;height:38px;border-radius:50%;background:var(--navy);color:var(--white);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.15rem;flex:none}
+  .blk-card h3{font-size:1.45rem;font-weight:800;color:var(--brown)}
+  .blk-card .ask{background:var(--paper);border-right:5px solid var(--caramel);border-radius:10px;padding:10px 14px;font-weight:800;color:var(--espresso);margin:6px 0 14px;font-size:1.05rem}
+  .blk-card .decision{margin-top:12px}
+  .blk-card .tip-field label{color:var(--brown)}
+  .fromto{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:end;margin-bottom:6px}
+  .fromto .ar{font-size:1.8rem;color:var(--caramel);font-weight:800;padding-bottom:10px}
+  .stations{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:6px}
+  .stations .field label{font-size:.95rem}
+  .more-topics{margin-top:18px}
+  .more-topics summary{cursor:pointer;font-weight:800;color:var(--brown);padding:8px 0}
+  .act-tools{display:flex;gap:10px;align-items:center}
+  @media (max-width:760px){ .stations{grid-template-columns:1fr 1fr} .fromto{grid-template-columns:1fr} .fromto .ar{display:none} }
+
+  /* summary document: the chain + the action map */
+  .doc .blk{border:2px solid var(--sand);border-right:7px solid var(--brown);border-radius:12px;padding:14px 16px;margin-bottom:12px;break-inside:avoid}
+  .doc .blk .bh{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--navy);font-size:1.2rem}
+  .doc .blk .bh .bn{width:32px;height:32px;border-radius:50%;background:var(--navy);color:var(--white);display:inline-flex;align-items:center;justify-content:center;font-size:1rem;flex:none}
+  .doc .blk .dec{font-weight:800;font-size:1.08rem;margin-top:8px;line-height:1.6}
+  .doc .blk .tip{background:#F6EEE5;border-radius:8px;padding:8px 12px;margin-top:10px;font-weight:700;color:var(--brown);line-height:1.6}
+  .doc .ft{display:grid;grid-template-columns:1fr 36px 1fr;gap:8px;align-items:stretch;margin-top:10px}
+  .doc .ft .box{border-radius:10px;padding:10px 12px;font-weight:700;line-height:1.5}
+  .doc .ft .box small{display:block;font-size:.78rem;font-weight:800;color:var(--ink-soft);margin-bottom:2px}
+  .doc .ft .from{background:#EFE9E2}
+  .doc .ft .to{background:var(--navy-tint);color:var(--navy);font-weight:800}
+  .doc .ft .ar{display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:var(--caramel);font-weight:800}
+  .doc .stations-d{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+  .doc .stations-d .st{border:2px solid var(--sand);border-radius:10px;padding:8px 10px;font-size:.92rem;font-weight:600;line-height:1.5}
+  .doc .stations-d .st b{display:block;color:var(--brown);font-size:.85rem}
+  .doc .when{font-size:1rem;font-weight:800;color:var(--white);background:var(--brown);display:inline-block;border-radius:8px;padding:2px 12px;margin:10px 0 8px}
   .drop{
     display:flex;align-items:center;gap:14px;flex-wrap:wrap;
     border:3px dashed var(--caramel);border-radius:var(--radius);padding:16px;background:#FBF7F0;
@@ -300,8 +337,8 @@
     .fu-head,.fu-doc .callout{-webkit-print-color-adjust:exact;print-color-adjust:exact}
     .fu-doc .dir,.fu-doc .s h2{break-inside:avoid}
     .doc{box-shadow:none;max-width:none;border-radius:0}
-    .doc .d-head,.doc .goal,.doc .gap,.doc .tag,.doc .act .num{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .doc .act,.doc .topic{break-inside:avoid}
+    .doc .d-head,.doc .goal,.doc .gap,.doc .tag,.doc .act .num,.doc .blk .bn,.doc .blk .tip,.doc .ft .box,.doc .when{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .doc .act,.doc .topic,.doc .blk{break-inside:avoid}
   }
 </style>
 </head>
@@ -313,7 +350,7 @@
     <img src="logo.jpg" alt="טוהר אקנין">
     <div>
       <h1>פגישות דיוק ואסטרטגיה</h1>
-      <p>תיק לכל לקוחה: הכנה, הובלת הפגישה, ומפת דרך בסוף.</p>
+      <p>תיק לכל לקוחה: הכנה, הובלת הפגישה, וסיכום + מפת פעולות בסוף.</p>
     </div>
   </div>
   <button class="btn brown big" id="newClientBtn">＋ תיק לקוחה חדש</button>
@@ -350,9 +387,9 @@
       <button class="tab" data-sec="2"><span class="n">2</span>מיקוד <span class="t">10′</span></button>
       <button class="tab" data-sec="3"><span class="n">3</span>תמונת מצב <span class="t">20′</span></button>
       <button class="tab" data-sec="4"><span class="n">4</span>הפער המרכזי <span class="t">15′</span></button>
-      <button class="tab" data-sec="5"><span class="n">5</span>פיתוח ואסטרטגיה <span class="t">30′</span></button>
-      <button class="tab" data-sec="6"><span class="n">6</span>פעולות וסגירה <span class="t">15′</span></button>
-      <button class="tab roadmap-tab" data-sec="7"><span class="n">★</span>מפת הדרך</button>
+      <button class="tab" data-sec="5"><span class="n">5</span>בונות את המהלך <span class="t">35′</span></button>
+      <button class="tab" data-sec="6"><span class="n">6</span>מפת פעולות <span class="t">10′</span></button>
+      <button class="tab roadmap-tab" data-sec="7"><span class="n">★</span>סיכום + מפת פעולות</button>
       <button class="tab follow-tab" data-sec="8"><span class="n">↻</span>פגישות המשך</button>
     </div>
   </nav>
@@ -428,16 +465,21 @@
 
       <!-- 5. STRATEGY -->
       <section class="section" id="sec-5">
-        <div class="sec-head"><h2>פיתוח ואסטרטגיה</h2><span class="time">כ־30 דקות</span></div>
-        <p class="sec-intro">פותחות רק את הנושאים שרלוונטיים. בכל נושא מפרידות בין רעיון שעלה לבין כיוון שבחרנו.</p>
-        <div class="chips" id="topicChips"></div>
-        <div id="topicCards"></div>
+        <div class="sec-head"><h2>בונות את המהלך</h2><span class="time">כ־35 דקות</span></div>
+        <p class="sec-intro">עוברות לפי הסדר. כל חוליה נשענת על הקודמת. בכל אחת: שואלות, מקשיבות, סוגרות החלטה, ונותנות לה משהו לקחת איתה.</p>
+        <div class="chain" id="chain"></div>
+        <div id="blocks"></div>
+        <details class="more-topics" id="moreTopics">
+          <summary>＋ נושאים נוספים (לא חובה)</summary>
+          <div class="chips" id="topicChips"></div>
+          <div id="topicCards"></div>
+        </details>
       </section>
 
       <!-- 6. ACTIONS -->
       <section class="section" id="sec-6">
-        <div class="sec-head"><h2>תוכנית פעולה וסגירה</h2><span class="time">כ־15 דקות</span></div>
-        <p class="sec-intro">עד שלוש פעולות בעדיפות ראשונה.</p>
+        <div class="sec-head"><h2>מפת פעולות וסגירה</h2><span class="time">כ־10 דקות</span></div>
+        <p class="sec-intro">סדר הפעולות: מה קודם למה. עד 5 פעולות, ולכל אחת מתי ואיך נראה "סיימתי".</p>
         <div id="actionCards"></div>
         <button class="chip add" id="addActionBtn">＋ הוספת פעולה</button>
         <div class="closing-grid">
@@ -456,20 +498,20 @@
           <div class="field"><label for="f-open">מה נשאר פתוח</label><textarea id="f-open" data-path="closing.open"></textarea></div>
         </div>
         </div>
-        <div class="nav-row"><span></span><button class="btn brown big" data-goto="7">★ למפת הדרך</button></div>
+        <div class="nav-row"><span></span><button class="btn brown big" data-goto="7">★ לסיכום ולמפת הפעולות</button></div>
       </section>
 
-      <!-- 7. ROADMAP -->
+      <!-- 7. SUMMARY + ACTION MAP -->
       <section class="section" id="sec-7">
-        <div class="sec-head"><h2>מפת הדרך</h2></div>
-        <p class="sec-intro">טיוטה שנבנית רק ממה שתיעדת, בלי הערות פרטיות. אפשר לערוך ישירות על הדף.</p>
+        <div class="sec-head"><h2>סיכום פגישה + מפת פעולות</h2></div>
+        <p class="sec-intro">נבנה רק ממה שסגרתן, בלי הערות פרטיות ובלי "מה עלה בשיחה". אפשר לערוך ישירות על הדף.</p>
         <div class="rm-actions">
-          <button class="btn brown big" id="genBtn">✨ יצירת מפת הדרך</button>
+          <button class="btn brown big" id="genBtn">✨ יצירת הסיכום</button>
           <button class="btn" id="printBtn" hidden>🖨 הדפסה / שמירה כ-PDF</button>
           <button class="btn ghost" id="copyRmBtn" hidden>העתקת הטקסט</button>
         </div>
         <div class="doc" id="roadmap" contenteditable="true" spellcheck="false" hidden></div>
-        <p class="empty-note" id="rmEmpty">עוד לא נוצרה מפת דרך ללקוחה הזאת.</p>
+        <p class="empty-note" id="rmEmpty">עוד לא נוצר סיכום ללקוחה הזאת.</p>
       </section>
 
       <!-- 8. FOLLOW-UP MEETINGS -->
@@ -485,7 +527,7 @@
       <div class="side-box follow">
         <h3>📌 נושאים להמשך</h3>
         <textarea id="sideFollow" data-path="followups" placeholder="נושא שעלה ולא עכשיו..."></textarea>
-        <span class="hint">נכנס למפת הדרך כ"נושאים להמשך".</span>
+        <span class="hint">נכנס לסיכום כ"נושאים להמשך".</span>
       </div>
       <div class="side-box priv">
         <h3>🔒 הערות פרטיות שלי</h3>
@@ -508,8 +550,27 @@ const SITUATION = [
   ["works",     "מה עובד ומה פחות?",                     "מה עובד ומה פחות"],
   ["resources", "אילו משאבים ומגבלות צריך לקחת בחשבון?", "משאבים ומגבלות"]
 ];
-const TOPICS = ["שירותים ומוצרים", "קהל", "בידול וערך", "מסרים", "ערוצי שיווק", "תהליך מכירה"];
-const MAX_ACTIONS = 3;
+const TOPICS = ["בידול וערך", "מסרים", "ערוצי שיווק", "תהליך מכירה"];
+const MAX_ACTIONS = 5;
+const WHEN = ["השבוע", "החודש", "אחר כך"];
+
+// the chain we build in section 5, in this order; each one leans on the one before
+const BLOCKS = [
+  { key: "audience", title: "הקהל",
+    ask: "מי הלקוחה שהכי נהנית ממנה היום? מה היא אמרה או הרגישה רגע לפני שקנתה?",
+    dec: "הקהל שבחרנו להתמקד בו" },
+  { key: "transform", title: "הטרנספורמציה",
+    ask: "מאיפה למה הלקוחה עוברת? מה משתנה אצלה בסוף, גם בלי שאת בחדר?",
+    dec: "הטרנספורמציה במשפט אחד",
+    fromto: true },
+  { key: "service", title: "השירות",
+    ask: "מה מהעבודה האישית אפשר ללמד בקורס, ומה חייב להישאר אישי?",
+    dec: "איך השירות בנוי (מה בקורס, מה אישי, מה המחיר והמבנה)" },
+  { key: "journey", title: "מסע הלקוחה",
+    ask: "איך מי שלא מכירה אותה מגיעה עד לקורס? באיזה שלב זה נתקע היום?",
+    dec: "החוליה שעליה עובדות עכשיו, ולמה",
+    stations: ["מכירה אותה", "סומכת עליה", "נכנסת לשירות", "עוברת שינוי וממליצה"] }
+];
 
 const $ = id => document.getElementById(id);
 let db = load();
@@ -541,7 +602,8 @@ function newClient(){
     situation: { open: [], answers: {} },
     gap: { described: "", identified: "", toClarify: "", central: "" },
     strategy: { topics: [] },
-    actions: [{ what: "", done: "", due: "", depends: "" }],
+    build: {},
+    actions: [{ what: "", done: "", due: "", depends: "", when: "" }],
     closing: { answers: "", note: "", open: "" },
     followups: "", private: "",
     meetings: [],
@@ -756,7 +818,7 @@ function renderSituation(){
     chip.addEventListener("click", () => {
       const open = current.situation.open;
       if (on){
-        if ((current.situation.answers[key] || "").trim() && !confirm("לסגור את השאלה? מה שכתבת בה יישמר, אבל לא ייכנס למפת הדרך.")) return;
+        if ((current.situation.answers[key] || "").trim() && !confirm("לסגור את השאלה? מה שכתבת בה יישמר, אבל לא ייכנס לסיכום.")) return;
         current.situation.open = open.filter(k => k !== key);
       } else {
         open.push(key);
@@ -841,6 +903,60 @@ function renderTopics(){
   fillBound(box);
 }
 
+/* ---------- section 5: the chain ---------- */
+function blockDone(b){
+  const d = current.build?.[b.key] || {};
+  return has(d.decision);
+}
+function renderBlocks(){
+  const chain = $("chain"), box = $("blocks");
+  chain.innerHTML = ""; box.innerHTML = "";
+  BLOCKS.forEach((b, i) => {
+    if (i) { const ar = document.createElement("span"); ar.className = "ar"; ar.textContent = "←"; chain.appendChild(ar); }
+    const pill = document.createElement("button");
+    pill.type = "button";
+    pill.className = blockDone(b) ? "done" : "";
+    pill.textContent = (blockDone(b) ? "✓ " : (i + 1) + ". ") + b.title;
+    pill.addEventListener("click", () => $("blk-" + b.key).scrollIntoView({ behavior: "smooth", block: "start" }));
+    chain.appendChild(pill);
+
+    const p = "build." + b.key + ".";
+    let extra = "";
+    if (b.fromto) extra =
+      '<div class="fromto">' +
+        '<div class="field"><label>לפני: איפה הלקוחה שלה נמצאת היום</label><textarea data-path="' + p + 'from"></textarea></div>' +
+        '<span class="ar">←</span>' +
+        '<div class="field"><label>אחרי: איפה היא בסוף התהליך</label><textarea data-path="' + p + 'to"></textarea></div>' +
+      '</div>';
+    if (b.stations) extra =
+      '<div class="stations">' + b.stations.map((s, k) =>
+        '<div class="field"><label>' + (k + 1) + '. ' + s + '</label><textarea data-path="' + p + 's' + (k + 1) + '" placeholder="איך זה קורה?"></textarea></div>').join("") +
+      '</div>';
+    const card = document.createElement("div");
+    card.className = "card blk-card";
+    card.id = "blk-" + b.key;
+    card.innerHTML =
+      '<div class="blk-title"><span class="bn">' + (i + 1) + '</span><h3>' + b.title + '</h3></div>' +
+      '<div class="ask">💬 ' + b.ask + '</div>' +
+      extra +
+      '<div class="field"><label>מה עלה בשיחה <span class="hint">(בשבילך, לא נכנס לסיכום)</span></label><textarea data-path="' + p + 'notes"></textarea></div>' +
+      '<div class="decision"><div class="field"><label>✔ ' + b.dec + '</label><textarea data-path="' + p + 'decision" placeholder="משפט אחד ברור..."></textarea></div></div>' +
+      '<div class="field tip-field" style="margin-top:12px"><label>💡 מה היא לוקחת איתה מכאן <span class="hint">(עיקרון או ידע, נכנס לסיכום)</span></label><textarea data-path="' + p + 'insight"></textarea></div>';
+    box.appendChild(card);
+  });
+  fillBound(box);
+}
+document.addEventListener("input", e => {
+  if (current && e.target.dataset?.path && /^build\.\w+\.decision$/.test(e.target.dataset.path)){
+    // refresh only the progress pills, so the field being typed in keeps its focus
+    $("chain").querySelectorAll("button").forEach((pill, i) => {
+      const b = BLOCKS[i], done = blockDone(b);
+      pill.className = done ? "done" : "";
+      pill.textContent = (done ? "✓ " : (i + 1) + ". ") + b.title;
+    });
+  }
+});
+
 function renderActions(){
   const box = $("actionCards");
   box.innerHTML = "";
@@ -848,14 +964,23 @@ function renderActions(){
     const card = document.createElement("div");
     card.className = "card action-card";
     card.innerHTML =
-      '<div class="topic-title"><h3>פעולה ' + (i + 1) + '</h3>' + (current.actions.length > 1 ? '<button type="button" class="link-btn">הסרה</button>' : '') + '</div>' +
-      '<div class="grid2">' +
-        '<div class="field"><label>מה בדיוק עושים?</label><textarea data-path="actions.' + i + '.what"></textarea></div>' +
-        '<div class="field"><label>מה ייחשב להשלמת הפעולה?</label><textarea data-path="actions.' + i + '.done"></textarea></div>' +
-        '<div class="field"><label>עד מתי?</label><input type="date" data-path="actions.' + i + '.due"></div>' +
-        '<div class="field"><label>במה היא תלויה, אם בכלל?</label><input type="text" data-path="actions.' + i + '.depends"></div>' +
-      '</div>';
-    card.querySelector(".link-btn")?.addEventListener("click", () => {
+      '<div class="topic-title"><h3>פעולה ' + (i + 1) + '</h3><span class="act-tools">' +
+        (i > 0 ? '<button type="button" class="link-btn up">↑ להקדים</button>' : '') +
+        (current.actions.length > 1 ? '<button type="button" class="link-btn del">הסרה</button>' : '') + '</span></div>' +
+      '<div class="field"><label>מה בדיוק עושים?</label><textarea data-path="actions.' + i + '.what"></textarea></div>' +
+      '<div class="field"><label>איך נראה "סיימתי"?</label><textarea data-path="actions.' + i + '.done"></textarea></div>' +
+      '<div class="field"><label>מתי?</label><div class="seg when-seg">' +
+        WHEN.map(w => '<button type="button" data-v="' + w + '"' + (a.when === w ? ' class="on"' : '') + '>' + w + '</button>').join("") +
+      '</div></div>';
+    card.querySelectorAll(".when-seg button").forEach(btn => btn.addEventListener("click", () => {
+      a.when = a.when === btn.dataset.v ? "" : btn.dataset.v;
+      saveSoon(); renderActions();
+    }));
+    card.querySelector(".up")?.addEventListener("click", () => {
+      [current.actions[i - 1], current.actions[i]] = [current.actions[i], current.actions[i - 1]];
+      saveSoon(); renderActions();
+    });
+    card.querySelector(".del")?.addEventListener("click", () => {
       const filled = Object.values(a).some(v => String(v).trim());
       if (filled && !confirm("להסיר את פעולה " + (i + 1) + "?")) return;
       current.actions.splice(i, 1);
@@ -869,7 +994,7 @@ function renderActions(){
 
 $("addActionBtn").addEventListener("click", () => {
   if (current.actions.length >= MAX_ACTIONS) return;
-  current.actions.push({ what: "", done: "", due: "", depends: "" });
+  current.actions.push({ what: "", done: "", due: "", depends: "", when: "" });
   saveSoon(); renderActions();
   setTimeout(() => $("actionCards").lastElementChild.querySelector("textarea").focus(), 30);
 });
@@ -889,7 +1014,7 @@ function renderRoadmap(){
   $("rmEmpty").hidden = has;
   $("printBtn").hidden = !has;
   $("copyRmBtn").hidden = !has;
-  $("genBtn").textContent = has ? "↻ יצירה מחדש מהתיעוד" : "✨ יצירת מפת הדרך";
+  $("genBtn").textContent = has ? "↻ יצירה מחדש מהתיעוד" : "✨ יצירת הסיכום";
 }
 
 
@@ -1078,7 +1203,9 @@ function buildFollowSummary(m){
 
 function renderAll(){
   fillBound($("clientScreen"));
-  renderWho(); renderFocus(); renderFiles(); renderSituation(); renderTopics(); renderActions(); renderAnswersSeg(); renderRoadmap(); renderFollow();
+  current.build ??= {};
+  renderWho(); renderFocus(); renderFiles(); renderSituation(); renderBlocks(); renderTopics(); renderActions();
+  $("moreTopics").open = current.strategy.topics.length > 0; renderAnswersSeg(); renderRoadmap(); renderFollow();
 }
 
 /* ---------- navigation ---------- */
@@ -1139,25 +1266,30 @@ function buildRoadmap(c){
   const sec = (title, body) => { if (body) out.push('<div class="d-sec"><h2>' + title + '</h2>' + body + '</div>'); };
   const sub = (title, text) => has(text) ? '<h4>' + title + '</h4><p>' + para(text) + '</p>' : "";
 
-  // goal
+  // 1. what we worked on + the central gap
   let goal = "";
   if (has(c.focus.chosen)) goal += '<div class="goal">' + para(c.focus.chosen) + '</div>';
-  goal += sub("עם מה רצית לצאת מהפגישה", c.focus.outcome);
-  sec("מטרת הפגישה", goal);
+  if (has(c.gap.central)) goal += '<div class="gap">הפער המרכזי: ' + para(c.gap.central) + '</div>';
+  goal += sub("מה זיהינו יחד", c.gap.identified);
+  sec("על מה עבדנו", goal);
 
-  // relevant situation: only the questions that were opened and answered
-  let sit = "";
-  SITUATION.forEach(([key, , title]) => {
-    if (c.situation.open.includes(key)) sit += sub(title, c.situation.answers[key]);
+  // 2. the chain we built: audience -> transformation -> service -> journey (only what was decided)
+  let chain = "";
+  BLOCKS.forEach((b, i) => {
+    const d = (c.build || {})[b.key] || {};
+    let body = "";
+    if (b.fromto && (has(d.from) || has(d.to))) body +=
+      '<div class="ft"><div class="box from"><small>היום</small>' + (has(d.from) ? para(d.from) : "") + '</div><span class="ar">←</span>' +
+      '<div class="box to"><small>בסוף התהליך</small>' + (has(d.to) ? para(d.to) : "") + '</div></div>';
+    if (b.stations && b.stations.some((s, k) => has(d["s" + (k + 1)]))) body +=
+      '<div class="stations-d">' + b.stations.map((s, k) => '<div class="st"><b>' + (k + 1) + '. ' + s + '</b>' + (has(d["s" + (k + 1)]) ? para(d["s" + (k + 1)]) : "") + '</div>').join("") + '</div>';
+    if (has(d.decision)) body += '<div class="dec">' + para(d.decision) + '</div>';
+    if (has(d.insight)) body += '<div class="tip">💡 לזכור: ' + para(d.insight) + '</div>';
+    if (body) chain += '<div class="blk"><div class="bh"><span class="bn">' + (i + 1) + '</span>' + b.title + '</div>' + body + '</div>';
   });
-  sec("תמונת המצב", sit);
+  sec("המהלך שבנינו", chain);
 
-  // insights
-  let ins = sub("הקושי כפי שתיארת אותו", c.gap.described) + sub("מה זיהינו יחד", c.gap.identified);
-  if (has(c.gap.central)) ins += '<div class="gap">הפער המרכזי שבחרנו לעבוד עליו: ' + para(c.gap.central) + '</div>';
-  sec("התובנות המרכזיות", ins);
-
-  // direction & decisions: decisions and raw ideas are labeled apart
+  // older files: extra topics (decisions and raw ideas are labeled apart)
   let dir = "";
   c.strategy.topics.forEach(t => {
     if (!has(t.direction) && !has(t.ideas)) return;
@@ -1166,18 +1298,24 @@ function buildRoadmap(c){
     if (has(t.ideas)) dir += '<p><span class="tag idea">רעיונות שעלו, עוד לא הוחלטו</span> ' + para(t.ideas) + '</p>';
     dir += '</div>';
   });
-  sec("הכיוון וההחלטות שקיבלנו", dir);
+  sec("החלטות נוספות", dir);
 
-  // actions
-  let acts = "";
-  c.actions.filter(a => has(a.what)).forEach((a, i) => {
-    acts += '<div class="act"><span class="num">' + (i + 1) + '</span><div class="what">' + para(a.what) + '</div>' +
-      (has(a.done) ? '<div class="meta"><b>מתי זה נחשב הושלם:</b> ' + para(a.done) + '</div>' : "") +
-      (has(a.due) ? '<div class="meta"><b>עד:</b> ' + esc(fmtDate(a.due)) + '</div>' : "") +
-      (has(a.depends) ? '<div class="meta"><b>תלוי ב:</b> ' + para(a.depends) + '</div>' : "") +
-      '</div>';
+  // 3. the action map, in order, grouped by when
+  let acts = "", n = 0;
+  const actList = c.actions.filter(a => has(a.what));
+  const groups = WHEN.map(w => [w, actList.filter(a => a.when === w)]).concat([["", actList.filter(a => !WHEN.includes(a.when))]]);
+  groups.forEach(([w, list]) => {
+    if (!list.length) return;
+    if (w) acts += '<div class="when">' + w + '</div>';
+    list.forEach(a => {
+      n++;
+      acts += '<div class="act"><span class="num">' + n + '</span><div class="what">' + para(a.what) + '</div>' +
+        (has(a.done) ? '<div class="meta"><b>✔ סיימתי כש:</b> ' + para(a.done) + '</div>' : "") +
+        (has(a.due) ? '<div class="meta"><b>עד:</b> ' + esc(fmtDate(a.due)) + '</div>' : "") +
+        '</div>';
+    });
   });
-  sec("הפעולות הבאות", acts);
+  sec("מפת הפעולות שלך", acts);
 
   // what stays open (private notes and the prep "what I want to clarify" are never included)
   let cont = "";
@@ -1190,8 +1328,8 @@ function buildRoadmap(c){
   sec("נושאים שנשארו להמשך", cont);
 
   const meta = [c.prep.name, c.prep.business, fmtDate(c.prep.date)].filter(has).map(esc).join(" · ");
-  const head = '<div class="d-head"><img src="logo.jpg" alt=""><div><h1>מפת הדרך שלך</h1><p>' + meta + '</p></div></div>';
-  const body = out.length ? out.join("") : '<div class="d-sec"><p>עוד אין מספיק תיעוד כדי לבנות מפת דרך.</p></div>';
+  const head = '<div class="d-head"><img src="logo.jpg" alt=""><div><h1>סיכום הפגישה ומפת הפעולות שלך</h1><p>' + meta + '</p></div></div>';
+  const body = out.length ? out.join("") : '<div class="d-sec"><p>עוד אין מספיק תיעוד כדי לבנות סיכום.</p></div>';
   return head + body + '<div class="foot">טוהר אקנין · תהליכי שיווק</div>';
 }
 
@@ -1204,7 +1342,7 @@ $("genBtn").addEventListener("click", () => {
 });
 $("printBtn").addEventListener("click", () => {
   const old = document.title;
-  document.title = "מפת דרך - " + (current.prep.name || "לקוחה");
+  document.title = "סיכום פגישה - " + (current.prep.name || "לקוחה");
   window.print();
   document.title = old;
 });
