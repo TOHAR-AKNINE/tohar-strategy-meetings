@@ -504,7 +504,7 @@
       <!-- 7. SUMMARY + ACTION MAP -->
       <section class="section" id="sec-7">
         <div class="sec-head"><h2>סיכום פגישה + מפת פעולות</h2></div>
-        <p class="sec-intro">נבנה רק ממה שסגרתן, בלי הערות פרטיות ובלי "מה עלה בשיחה". אפשר לערוך ישירות על הדף.</p>
+        <p class="sec-intro">נבנה מכל מה שתיעדת בפגישה, בלי ההערות הפרטיות שלך. אפשר לערוך ישירות על הדף.</p>
         <div class="rm-actions">
           <button class="btn brown big" id="genBtn">✨ יצירת הסיכום</button>
           <button class="btn" id="printBtn" hidden>🖨 הדפסה / שמירה כ-PDF</button>
@@ -939,7 +939,7 @@ function renderBlocks(){
       '<div class="blk-title"><span class="bn">' + (i + 1) + '</span><h3>' + b.title + '</h3></div>' +
       '<div class="ask">💬 ' + b.ask + '</div>' +
       extra +
-      '<div class="field"><label>מה עלה בשיחה <span class="hint">(בשבילך, לא נכנס לסיכום)</span></label><textarea data-path="' + p + 'notes"></textarea></div>' +
+      '<div class="field"><label>מה עלה בשיחה <span class="hint">(נכנס לסיכום)</span></label><textarea data-path="' + p + 'notes"></textarea></div>' +
       '<div class="decision"><div class="field"><label>✔ ' + b.dec + '</label><textarea data-path="' + p + 'decision" placeholder="משפט אחד ברור..."></textarea></div></div>' +
       '<div class="field tip-field" style="margin-top:12px"><label>💡 מה היא לוקחת איתה מכאן <span class="hint">(עיקרון או ידע, נכנס לסיכום)</span></label><textarea data-path="' + p + 'insight"></textarea></div>';
     box.appendChild(card);
@@ -1270,8 +1270,16 @@ function buildRoadmap(c){
   let goal = "";
   if (has(c.focus.chosen)) goal += '<div class="goal">' + para(c.focus.chosen) + '</div>';
   if (has(c.gap.central)) goal += '<div class="gap">הפער המרכזי: ' + para(c.gap.central) + '</div>';
-  goal += sub("מה זיהינו יחד", c.gap.identified);
+  goal += sub("עם מה רצית לצאת מהפגישה", c.focus.outcome);
   sec("על מה עבדנו", goal);
+
+  // where things stand: the situation questions that were opened, and how she described the difficulty
+  let sit = "";
+  SITUATION.forEach(([key, , title]) => {
+    if (c.situation.open.includes(key)) sit += sub(title, c.situation.answers[key]);
+  });
+  sit += sub("הקושי כפי שתיארת אותו", c.gap.described) + sub("מה זיהינו יחד", c.gap.identified);
+  sec("תמונת המצב", sit);
 
   // 2. the chain we built: audience -> transformation -> service -> journey (only what was decided)
   let chain = "";
@@ -1283,7 +1291,8 @@ function buildRoadmap(c){
       '<div class="box to"><small>בסוף התהליך</small>' + (has(d.to) ? para(d.to) : "") + '</div></div>';
     if (b.stations && b.stations.some((s, k) => has(d["s" + (k + 1)]))) body +=
       '<div class="stations-d">' + b.stations.map((s, k) => '<div class="st"><b>' + (k + 1) + '. ' + s + '</b>' + (has(d["s" + (k + 1)]) ? para(d["s" + (k + 1)]) : "") + '</div>').join("") + '</div>';
-    if (has(d.decision)) body += '<div class="dec">' + para(d.decision) + '</div>';
+    if (has(d.notes)) body += '<h4>מה עלה בשיחה</h4><p>' + para(d.notes) + '</p>';
+    if (has(d.decision)) body += '<h4>✔ מה סגרנו</h4><div class="dec">' + para(d.decision) + '</div>';
     if (has(d.insight)) body += '<div class="tip">💡 לזכור: ' + para(d.insight) + '</div>';
     if (body) chain += '<div class="blk"><div class="bh"><span class="bn">' + (i + 1) + '</span>' + b.title + '</div>' + body + '</div>';
   });
