@@ -421,8 +421,8 @@
           <div id="attachList"></div>
           <div class="field" style="margin-top:14px"><label for="f-q">טקסט מהשאלון <span class="hint">(לא חובה)</span></label><textarea class="tall" id="f-q" data-path="prep.questionnaire"></textarea></div>
         </div>
-        <div class="card private">
-          <div class="field"><label for="f-clarify">מה חשוב לי לברר בעקבות התשובות שלה?<span class="private-tag">🔒 פרטי</span></label><textarea id="f-clarify" data-path="prep.toClarify"></textarea></div>
+        <div class="card">
+          <div class="field"><label for="f-clarify">מה חשוב לי לברר בעקבות התשובות שלה?</label><span class="hint">נכנס לסיכום, בחלק "זום אאוט"</span><textarea id="f-clarify" data-path="prep.toClarify"></textarea></div>
         </div>
         <div class="nav-row"><button type="button" class="link-btn" id="deleteClientBtn">מחיקת התיק</button><button class="btn" data-goto="2">למיקוד הפגישה ←</button></div>
       </section>
@@ -643,6 +643,7 @@ document.addEventListener("input", e => {
     saveSoon();
   } else if (el.id === "roadmap"){
     current.roadmap.html = el.innerHTML;
+    current.roadmap.manual = true;
     saveSoon();
   } else if (el.id === "fuDoc" && current.meetings?.[selFu]){
     current.meetings[selFu].summaryHtml = el.innerHTML;
@@ -1216,6 +1217,11 @@ function goto(n){
   // textareas in hidden sections have no height yet
   document.querySelectorAll("#sec-" + n + " textarea").forEach(autoGrow);
   if (current) renderFocus();
+  // a summary nobody edited by hand always reflects the latest notes
+  if (n === "7" && current?.roadmap.html && !current.roadmap.manual){
+    current.roadmap.html = buildRoadmap(current);
+    saveSoon(); renderRoadmap();
+  }
   window.scrollTo({ top: 0 });
 }
 document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => goto(t.dataset.sec)));
@@ -1265,6 +1271,9 @@ function buildRoadmap(c){
   const out = [];
   const sec = (title, body) => { if (body) out.push('<div class="d-sec"><h2>' + title + '</h2>' + body + '</div>'); };
   const sub = (title, text) => has(text) ? '<h4>' + title + '</h4><p>' + para(text) + '</p>' : "";
+
+  // 0. the zoom-out: her questionnaire and what we set out to clarify
+  sec("🔍 זום אאוט: מאיפה יצאנו", sub("מה סיפרת לי לפני הפגישה", c.prep.questionnaire) + sub("מה רצינו לברר בפגישה", c.prep.toClarify));
 
   // 1. what we worked on + the central gap
   let goal = "";
@@ -1352,6 +1361,7 @@ function buildRoadmap(c){
 $("genBtn").addEventListener("click", () => {
   if (current.roadmap.html && !confirm("ליצור מחדש מהתיעוד? שינויים שעשית ידנית בטיוטה יימחקו.")) return;
   current.roadmap.html = buildRoadmap(current);
+  current.roadmap.manual = false;
   current.roadmap.generatedAt = Date.now();
   saveSoon(); renderRoadmap();
   toast("הטיוטה מוכנה. אפשר לערוך ישירות על הדף ✍️");
