@@ -1,6 +1,6 @@
 // Keeps the meeting system working without internet.
 // Bump VERSION whenever index.html changes so phones pick up the new copy.
-const VERSION = "v8";
+const VERSION = "v9";
 const CACHE = "strategy-meetings-" + VERSION;
 const FILES = [
   "./",
@@ -29,7 +29,7 @@ self.addEventListener("activate", e => {
 self.addEventListener("fetch", e => {
   if (e.request.method !== "GET" || new URL(e.request.url).origin !== location.origin) return;
   e.respondWith(
-    fetch(e.request)
+    fetch(e.request, { cache: "no-cache" })  // always ask the server, never a stale browser copy
       .then(res => {
         const copy = res.clone();
         caches.open(CACHE).then(c => c.put(e.request, copy));
