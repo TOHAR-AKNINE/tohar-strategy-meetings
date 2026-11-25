@@ -1277,7 +1277,7 @@ function buildRoadmap(c){
   // where things stand: the situation questions that were opened, and how she described the difficulty
   let sit = "";
   SITUATION.forEach(([key, , title]) => {
-    if (c.situation.open.includes(key)) sit += sub(title, c.situation.answers[key]);
+    if (c.situation.open.includes(key) || has(c.situation.answers[key])) sit += sub(title, c.situation.answers[key]);
   });
   sit += sub("הקושי כפי שתיארת אותו", c.gap.described) + sub("מה זיהינו יחד", c.gap.identified);
   sec("תמונת המצב", sit);
@@ -1326,6 +1326,12 @@ function buildRoadmap(c){
     });
   });
   sec("מפת הפעולות שלך", acts);
+
+  // how the meeting closed
+  let close = "";
+  if (has(c.closing.answers)) close += '<p><b>האם זה נותן מענה למטרה שהגדרנו?</b> ' + esc(c.closing.answers) + '</p>';
+  if (has(c.closing.note)) close += '<p>' + para(c.closing.note) + '</p>';
+  sec("בסיום הפגישה", close);
 
   // what stays open (private notes and the prep "what I want to clarify" are never included)
   let cont = "";
