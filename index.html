@@ -213,6 +213,19 @@
   .doc .act .meta{font-weight:600;color:var(--ink-soft);font-size:.95rem}
   .doc .act .meta b{color:var(--black)}
   .doc ul{padding-right:22px}
+  .doc .item{background:#FBF8F3;border:1.5px solid #EDE3D5;border-right:5px solid var(--caramel);border-radius:10px;padding:10px 14px;margin:10px 0;break-inside:avoid}
+  .doc .item h4{margin:0 0 4px}
+  .doc .item p{margin:0}
+  .doc .item.sure{background:var(--navy-tint);border-color:#D3DAE8;border-right-color:var(--navy)}
+  .doc .item.sure h4{color:var(--navy)}
+  .doc .pts{margin:0;padding-right:20px}
+  .doc .pts li{margin:3px 0;line-height:1.65}
+  .doc .tip b{display:block;margin-bottom:2px}
+  .doc .tip .pts,.doc .tip p{margin:0}
+  .doc h2{break-after:avoid}
+  .pg{width:100%;border-collapse:collapse}
+  .pg td{padding:0}
+  .pg-sp{height:0}
   .doc .foot{text-align:center;color:#8A7563;font-weight:700;margin-top:34px;font-size:.9rem}
 
   /* section 5: the chain audience -> transformation -> service -> journey */
@@ -325,7 +338,7 @@
 
   /* ---------- print: only the roadmap ---------- */
   @media print{
-    @page{size:A4;margin:12mm}
+    @page{size:A4;margin:0}
     body{background:#fff}
     .topbar,.tabs,aside,.side-toggle,.rm-actions,.sec-head,.sec-intro,#clientsScreen,.toast{display:none !important}
     .layout{display:block;padding:0}
@@ -336,7 +349,10 @@
     .fu-doc{box-shadow:none;max-width:none;margin:0;padding:0 6mm}
     .fu-head,.fu-doc .callout{-webkit-print-color-adjust:exact;print-color-adjust:exact}
     .fu-doc .dir,.fu-doc .s h2{break-inside:avoid}
-    .doc{box-shadow:none;max-width:none;border-radius:0}
+    .doc{box-shadow:none;max-width:none;border-radius:0;padding:0 12mm}
+    .doc .d-head{margin:0 -12mm}
+    .pg-sp{height:12mm}
+    .fu-head{padding-top:12mm !important}
     .doc .d-head,.doc .goal,.doc .gap,.doc .tag,.doc .act .num,.doc .blk .bn,.doc .blk .tip,.doc .ft .box,.doc .when{-webkit-print-color-adjust:exact;print-color-adjust:exact}
     .doc .act,.doc .topic,.doc .blk{break-inside:avoid}
   }
@@ -1199,7 +1215,8 @@ function buildFollowSummary(m){
   const body = out.filter(Boolean).join("") || "<p>עוד אין מספיק תיעוד כדי לבנות סיכום.</p>";
   // a table header repeats the title on every printed page
   return '<table class="fu-page"><thead><tr><td><div class="fu-head">' + title + '</div></td></tr></thead>' +
-         '<tbody><tr><td>' + body + '<div class="fu-foot">טוהר אקנין · תהליכי שיווק</div></td></tr></tbody></table>';
+         '<tbody><tr><td>' + body + '<div class="fu-foot">טוהר אקנין · תהליכי שיווק</div></td></tr></tbody>' +
+         '<tfoot><tr><td><div class="pg-sp"></div></td></tr></tfoot></table>';
 }
 
 function renderAll(){
@@ -1265,12 +1282,18 @@ $("timerReset").addEventListener("click", () => {
 /* ---------- roadmap: built only from what was documented ---------- */
 function esc(s){ return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
 function para(s){ return esc(s.trim()).replace(/\n/g, "<br>"); }
+// several written lines read better as bullet points than as one broken paragraph
+function textBlock(s){
+  const rows = String(s || "").split("\n").map(x => x.trim().replace(/^[-•*·]\s*/, "")).filter(Boolean);
+  if (rows.length < 2) return "<p>" + esc(rows[0] || "") + "</p>";
+  return '<ul class="pts">' + rows.map(x => "<li>" + esc(x) + "</li>").join("") + "</ul>";
+}
 function has(s){ return !!(s && String(s).trim()); }
 
 function buildRoadmap(c){
   const out = [];
   const sec = (title, body) => { if (body) out.push('<div class="d-sec"><h2>' + title + '</h2>' + body + '</div>'); };
-  const sub = (title, text) => has(text) ? '<h4>' + title + '</h4><p>' + para(text) + '</p>' : "";
+  const sub = (title, text) => has(text) ? '<div class="item"><h4>' + title + '</h4>' + textBlock(text) + '</div>' : "";
 
   // 0. the zoom-out: her questionnaire and what we set out to clarify
   sec("🔍 זום אאוט: מאיפה יצאנו", sub("מה סיפרת לי לפני הפגישה", c.prep.questionnaire) + sub("מה רצינו לברר בפגישה", c.prep.toClarify));
@@ -1301,9 +1324,9 @@ function buildRoadmap(c){
       '<div class="box to"><small>בסוף התהליך</small>' + (has(d.to) ? para(d.to) : "") + '</div></div>';
     if (b.stations && b.stations.some((s, k) => has(d["s" + (k + 1)]))) body +=
       '<div class="stations-d">' + b.stations.map((s, k) => '<div class="st"><b>' + (k + 1) + '. ' + s + '</b>' + (has(d["s" + (k + 1)]) ? para(d["s" + (k + 1)]) : "") + '</div>').join("") + '</div>';
-    if (has(d.notes)) body += '<h4>מה עלה בשיחה</h4><p>' + para(d.notes) + '</p>';
-    if (has(d.decision)) body += '<h4>✔ מה סגרנו</h4><div class="dec">' + para(d.decision) + '</div>';
-    if (has(d.insight)) body += '<div class="tip">💡 לזכור: ' + para(d.insight) + '</div>';
+    if (has(d.notes)) body += '<div class="item"><h4>מה עלה בשיחה</h4>' + textBlock(d.notes) + '</div>';
+    if (has(d.decision)) body += '<div class="item sure"><h4>✔ מה סגרנו</h4>' + textBlock(d.decision) + '</div>';
+    if (has(d.insight)) body += '<div class="tip"><b>💡 לזכור</b>' + textBlock(d.insight) + '</div>';
     if (body) chain += '<div class="blk"><div class="bh"><span class="bn">' + (i + 1) + '</span>' + b.title + '</div>' + body + '</div>';
   });
   sec("המהלך שבנינו", chain);
@@ -1355,7 +1378,9 @@ function buildRoadmap(c){
   const meta = [c.prep.name, c.prep.business, fmtDate(c.prep.date)].filter(has).map(esc).join(" · ");
   const head = '<div class="d-head"><img src="logo.jpg" alt=""><div><h1>סיכום הפגישה ומפת הפעולות שלך</h1><p>' + meta + '</p></div></div>';
   const body = out.length ? out.join("") : '<div class="d-sec"><p>עוד אין מספיק תיעוד כדי לבנות סיכום.</p></div>';
-  return head + body + '<div class="foot">טוהר אקנין · תהליכי שיווק</div>';
+  return '<table class="pg"><thead><tr><td><div class="pg-sp"></div></td></tr></thead><tbody><tr><td>' +
+         head + body + '<div class="foot">טוהר אקנין · תהליכי שיווק</div>' +
+         '</td></tr></tbody><tfoot><tr><td><div class="pg-sp"></div></td></tr></tfoot></table>';
 }
 
 $("genBtn").addEventListener("click", () => {
