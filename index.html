@@ -1270,6 +1270,7 @@ function buildRoadmap(c){
   let goal = "";
   if (has(c.focus.chosen)) goal += '<div class="goal">' + para(c.focus.chosen) + '</div>';
   if (has(c.gap.central)) goal += '<div class="gap">הפער המרכזי: ' + para(c.gap.central) + '</div>';
+  goal += sub("למה דווקא עכשיו", c.focus.why) + sub("מה הכי חשוב לך לקדם", c.focus.important);
   goal += sub("עם מה רצית לצאת מהפגישה", c.focus.outcome);
   sec("על מה עבדנו", goal);
 
